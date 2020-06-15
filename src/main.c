@@ -10,7 +10,15 @@ int main(void){
     //xprintf("Sys init\n");
 
     while(1){
-        for(volatile uint32_t i=0; i<100000; i++);
+        ssd1306_Fill(0);
+
+        for(uint8_t i=0; i<128; i++){
+            ssd1306_DrawPixel(i, 63-adcB[i*2]/64, 1);
+            ssd1306_DrawPixel(i, 63-adcB[i*2+1]/64, 1);
+        }
+
         ssd1306_UpdateScreen();
+
+        //xprintf("%u\n", TIM3->CNT);
     }
 }
