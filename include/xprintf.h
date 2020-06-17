@@ -7,7 +7,7 @@
 
 #define _USE_XFUNC_OUT	1	/* 1: Use output functions */
 #define	_CR_CRLF		1	/* 1: Convert \n ==> \r\n in the output char */
-#define	_USE_LONGLONG	0	/* 1: Enable long long integer in type "ll". */
+#define	_USE_LONGLONG	1	/* 1: Enable long long integer in type "ll". */
 #define	_LONGLONG_t		long long	/* Platform dependent long long integer type */
 
 #define _USE_XFUNC_IN	0	/* 1: Use input function */

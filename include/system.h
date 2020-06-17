@@ -6,7 +6,11 @@
 
 #define BOAD 500000
 
-extern int16_t adcB[256];
+extern uint32_t tick;
+extern uint32_t sec;
+
+extern uint16_t adcR[2];
+extern uint16_t adcF[2];
 
 void sysInit();
 void rccInit();

@@ -33,6 +33,7 @@ void ssd1306_DrawPixel(uint32_t x, uint32_t y, SSD1306_COLOR color);
 void ssd1306_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, SSD1306_COLOR color);
 void ssd1306_DrawRect(int16_t x0, int16_t y0, int16_t x1, int16_t y1, SSD1306_COLOR color);
 void ssd1306_WriteChar(char ch, FontDef Font, SSD1306_COLOR color);
+void ssd1306_Char(unsigned char ch);
 void ssd1306_WriteString(char* str, FontDef Font, SSD1306_COLOR color);
 void ssd1306_SetCursor(uint32_t x, uint32_t y);
 void ssd1306_SetContrast(uint8_t contrast);

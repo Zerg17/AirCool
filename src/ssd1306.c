@@ -228,6 +228,10 @@ void ssd1306_WriteChar(char ch, FontDef Font, SSD1306_COLOR color){
   SSD1306.CurrentX += Font.FontWidth;
 }
 
+void ssd1306_Char(unsigned char ch){
+	ssd1306_WriteChar(ch, Font_7x9, White);
+}
+
 void ssd1306_WriteString(char* str, FontDef Font, SSD1306_COLOR color){
   while (*str) 
     ssd1306_WriteChar(*str++, Font, color);

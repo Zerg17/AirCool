@@ -6,12 +6,13 @@ void sysInit(){
     uartInit();
     i2cInit();
     adcInit();
+    SysTick_Config(F_CPU/100);
 }
 
 void rccInit(){
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_DMAEN;
-    RCC->APB2ENR |= RCC_APB2ENR_USART1EN | RCC_APB2ENR_ADCEN;
-    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN | RCC_APB1ENR_TIM3EN;
+    RCC->APB2ENR |= RCC_APB2ENR_USART1EN | RCC_APB2ENR_ADCEN | RCC_APB2ENR_TIM16EN | RCC_APB2ENR_TIM17EN;
+    RCC->APB1ENR |= RCC_APB1ENR_I2C1EN | RCC_APB1ENR_TIM3EN | RCC_APB1ENR_TIM14EN;
 }
 
 void gpioInit(){
@@ -37,7 +38,8 @@ void i2cInit(){
     I2C1->CR1 = I2C_CR1_PE;
 }
 
-int16_t adcB[256];
+uint16_t adcR[2];
+uint16_t adcF[2];
 
 void adcInit(){
     ADC1->CR = ADC_CR_ADCAL;
@@ -46,21 +48,23 @@ void adcInit(){
     ADC1->CR = ADC_CR_ADEN;
     while(!(ADC1->ISR & ADC_ISR_ADRDY));
 
-    
-
     ADC1->CFGR1 = ADC_CFGR1_DMACFG | ADC_CFGR1_DMAEN | ADC_CFGR1_EXTEN_0 | ADC_CFGR1_EXTSEL_1 | ADC_CFGR1_EXTSEL_0;
-    ADC1->CHSELR = 0b11;
-    DMA1_Channel1->CNDTR = 256;
+    ADC1->CHSELR = 0b1;
+
+    DMA1_Channel1->CNDTR = 1;
     DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));
-    DMA1_Channel1->CMAR = (uint32_t)adcB;
-    DMA1_Channel1->CCR = DMA_CCR_MSIZE_0 | DMA_CCR_PSIZE_0 | DMA_CCR_MINC | DMA_CCR_CIRC;
+    DMA1_Channel1->CMAR = (uint32_t)adcR;
+    DMA1_Channel1->CCR = DMA_CCR_MSIZE_0 | DMA_CCR_PSIZE_0 | DMA_CCR_MINC | DMA_CCR_CIRC | DMA_CCR_TCIE;
     DMA1_Channel1->CCR |= DMA_CCR_EN;
+    
     ADC1->CR |= ADC_CR_ADSTART;
 
     TIM3->CR2 |= TIM_CR2_MMS_1;
-    //TIM3->PSC = 65535;
+    TIM3->PSC = 0;
     TIM3->ARR = 7999;
     TIM3->CR1 |= TIM_CR1_CEN;
+
+    NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 }
 
 // void adcInit(){
@@ -74,7 +78,7 @@ void adcInit(){
 //     ADC1->CHSELR = 0b11;
 //     DMA1_Channel1->CNDTR = 256;
 //     DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));
-//     DMA1_Channel1->CMAR = (uint32_t)adcB;
+//     DMA1_Channel1->CMAR = (uint32_t)adcR;
 //     DMA1_Channel1->CCR = DMA_CCR_MSIZE_0 | DMA_CCR_PSIZE_0 | DMA_CCR_MINC | DMA_CCR_CIRC;
 //     DMA1_Channel1->CCR |= DMA_CCR_EN;
 //     ADC1->CR |= ADC_CR_ADSTART;
