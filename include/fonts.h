@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __FONTS_H
 #define __FONTS_H
 

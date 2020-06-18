@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SYSTEM
 #define SYSTEM
 

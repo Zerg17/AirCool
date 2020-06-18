@@ -1,3 +1,4 @@
+#pragma once
 #ifndef TOOL
 #define TOOL
 

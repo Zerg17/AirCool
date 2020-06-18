@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------*/
 /* Universal string handler for user console interface  (C)ChaN, 2012     */
 /*------------------------------------------------------------------------*/
-
+#pragma once
 #ifndef _STRFUNC
 #define _STRFUNC
 

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __SSD1306_H
 #define __SSD1306_H
 
