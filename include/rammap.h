@@ -59,13 +59,14 @@ struct coreSetting{
 };
 
 struct coreStatus{
+    uint32_t time;    // Статус системы
+    uint32_t status;    // Статус системы
     int16_t temp1;      // Температура на внешнем датчике
     int16_t temp2;      // Температура на внутреннем датчике
-    uint16_t current;   // Ток системы
-    uint16_t voltage;   // Напряжение системы
     uint16_t rmpFan1;   // Обороты 1 вентилятора
     uint16_t rmpFan2;   // Обороты 2 вентилятора
-    uint16_t status;    // Статус системы
+    uint16_t voltage;   // Напряжение системы
+    uint16_t current;   // Ток системы
 };
 
 #endif

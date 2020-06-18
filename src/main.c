@@ -6,50 +6,43 @@
 #define T_R 10000
 #define N_T 25
 
-
 long map(long x, long in_min, long in_max, long out_min, long out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-extern uint8_t aa;
-extern uint16_t aRB[128];
-extern uint16_t aFB[128];
+unsigned char bufDisp[6][18];
+uint8_t posX=0;
+uint8_t posY=0;
+
+void bufDispWrite(unsigned char c){
+    if(c=='\n'){
+        posX=0;
+        posY=(posY+1)%6;
+        for(uint8_t i=0; i<18; i++)bufDisp[posY][i]=0;
+    }else if(c=='\r'){
+        posX=0;
+    }
+    else{
+        bufDisp[posY][posX]=c;
+        if(++posX==18)posX=0;
+    }
+}
 
 int main(void){
 
     sysInit();
 
     ssd1306_Init(0x3C);
-
-    //xprintf("Sys init\n");
+    xdev_out(bufDispWrite);
 
     while(1){
         ssd1306_Fill(0);
-
-        uint16_t min=65535;
-        uint16_t max=0;
-
-        for(uint8_t i=0; i<128; i++){
-            if(min>aRB[i])min=aRB[i];
-            if(max<aRB[i])max=aRB[i];
+        for(uint8_t j=0; j<6; j++){
+            ssd1306_SetCursor(0, j*10);
+            for(uint8_t i=0; i<18; i++){
+                ssd1306_Char(bufDisp[(posY+j+1)%6][i]);
+            }
         }
-
-        for(uint8_t i=0; i<128; i++){
-            ssd1306_DrawPixel(i, map(aRB[(i+aa)%128], min, max, 63, 0), 1);
-            ssd1306_DrawPixel(i, map(aFB[(i+aa)%128], min, max, 63, 0), 1);
-        }
-
-        ssd1306_SetCursor(0, 0);
-        xfprintf(ssd1306_Char, "%d", sec);
-
-        ssd1306_SetCursor(0, 10);
-        int32_t t = tempCalc(adcR[0]);
-        xfprintf(ssd1306_Char, "%d.%02d", t/65536, abs(((t*100)/65536)%100));
-
-        ssd1306_SetCursor(0, 20);
-        t = tempCalc(adcF[0]);
-        xfprintf(ssd1306_Char, "%d.%02d", t/65536, abs(((t*100)/65536)%100));
-  
         ssd1306_UpdateScreen();
 
         //xprintf("%u\n", TIM3->CNT);

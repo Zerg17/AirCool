@@ -28,7 +28,6 @@ void uartChar(unsigned char c){
 }
 
 void uartInit(){
-    xdev_out(uartChar);
     USART1->BRR = (F_CPU+BOAD/2)/BOAD;
     USART1->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }

@@ -6,19 +6,12 @@ uint32_t sec_d=0;
 uint32_t sec=0;
 
 uint8_t aa=0;
-uint16_t aRB[128];
-uint16_t aFB[128];
 
 void SysTick_Handler(void) {
     tick++;
     if(++sec_d==100){
         sec_d=0;
         sec++;
-    }
-    if(tick%2==0){
-        aRB[aa]=adcR[0];
-        aFB[aa]=adcF[0];
-        aa=(aa+1)%128;
     }
 }
 
