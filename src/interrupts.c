@@ -24,7 +24,7 @@ void SysTick_Handler(void) {
     coreStatus.time=sec;
 
     if(msgFlug){
-        if(msgType==0 && msgLen==0)msgResponse=1;
+        if(msgType<3 && msgLen==0)msgResponse=1;
         msgFlug=0;
     }
 }

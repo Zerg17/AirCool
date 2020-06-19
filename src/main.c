@@ -27,13 +27,6 @@ void bufDispWrite(unsigned char c){
     }
 }
 
-uint16_t crc;
-
-uint8_t crcf(uint8_t d){
-    crc+=d*211;
-    crc^=crc>>8;
-}
-
 int main(void){
 
     sysInit();
@@ -57,18 +50,10 @@ int main(void){
         ssd1306_UpdateScreen();
 
         if(msgResponse){
-            if(msgType==0){
-                crc=0;
-                uartWrite(0x55);crcf(0x55);
-                uartWrite(0x00);crcf(0x00);
-                uartWrite(0x00);crcf(0x00);
-                uartWrite(sizeof(coreStatus_t));crcf(sizeof(coreStatus_t));
-                for(uint8_t i=0; i<sizeof(coreStatus_t); i++){
-                    uartWrite(((uint8_t*)&coreStatus)[i]);
-                    crcf(((uint8_t*)&coreStatus)[i]);
-                }
-                uartWrite(crc);
-            }
+            if(msgType==0) sendPack(0, (uint8_t*)&coreInfo, sizeof(coreInfo_t));
+            if(msgType==1) sendPack(1, (uint8_t*)&coreStatus, sizeof(coreStatus_t));
+            if(msgType==2) sendPack(2, (uint8_t*)&coreSetting, sizeof(coreSetting_t));
+            
             msgResponse = 0;
         }
     }
