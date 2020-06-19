@@ -4,6 +4,80 @@
 
 #include <stdint.h>
 
+#define tCool_DEF 3500
+#define tCool_MIN 2000
+#define tCool_MAX 6000
+
+#define tHeat_DEF 0
+#define tHeat_MIN -1000
+#define tHeat_MAX 1500
+
+#define deltaTCool_DEF 500
+#define deltaTCool_MIN 100
+#define deltaTCool_MAX 2000
+
+#define deltaTHeat_DEF 500
+#define deltaTHeat_MIN 100
+#define deltaTHeat_MAX 1000
+
+#define calidT_DEF 0
+#define calidT_MIN -1000
+#define calidT_MAX 1000
+
+#define calidOffsetCurrent_DEF 0
+#define calidOffsetCurrent_MIN -1000
+#define calidOffsetCurrent_MAX 1000
+
+#define calidoffsetVoltage_DEF 0
+#define calidoffsetVoltage_MIN -1000
+#define calidoffsetVoltage_MAX 1000
+
+#define alrmTmin_DEF 4500
+#define alrmTmin_MIN 3000
+#define alrmTmin_MAX 7000
+
+#define alrmTmax_DEF 0
+#define alrmTmax_MIN -4000
+#define alrmTmax_MAX 2000
+
+#define heaterCurrentMin_DEF 100
+#define heaterCurrentMin_MIN 100
+#define heaterCurrentMin_MAX 3000
+
+#define heaterCurrentMax_DEF 3000
+#define heaterCurrentMax_MIN 100
+#define heaterCurrentMax_MAX 3000
+
+#define compressorCurrentMin_DEF 100
+#define compressorCurrentMin_MIN 100
+#define compressorCurrentMin_MAX 3000
+
+#define compressorCurrentMax_DEF 3000
+#define compressorCurrentMax_MIN 100
+#define compressorCurrentMax_MAX 3000
+
+#define alrmVmin_DEF 4000
+#define alrmVmin_MIN 4000
+#define alrmVmin_MAX 4800
+
+#define alrmVmax_DEF 5700
+#define alrmVmax_MIN 5000
+#define alrmVmax_MAX 6300
+
+#define minFanSpeedRMP_DEF 1000
+#define minFanSpeedRMP_MIN 500
+#define minFanSpeedRMP_MAX 2000
+
+#define fanSpeedRMP_DEF 2300
+#define fanSpeedRMP_MIN 500
+#define fanSpeedRMP_MAX 3000
+
+#define numPulsesFun_DEF 1
+
+#define coolNumber_DEF 0
+
+#define typePin_DEF 0
+
 typedef struct{
     uint32_t SN;
     uint32_t VP;

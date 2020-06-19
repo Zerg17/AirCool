@@ -23,6 +23,11 @@ void SysTick_Handler(void) {
 
     coreStatus.time=sec;
 
+    if(tick%200 == 0){
+        msgType=1;
+        msgResponse=1;
+    }
+
     if(msgFlug){
         if(msgType<3 && msgLen==0)msgResponse=1;
         msgFlug=0;

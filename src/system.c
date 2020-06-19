@@ -29,7 +29,7 @@ void uartWrite(uint8_t d){
 }
 
 void uartInit(){
-    //USART1->BRR = (F_CPU+BOAD/2)/BOAD;
+    USART1->BRR = (F_CPU+BOAD/2)/BOAD;
     USART1->CR1 = USART_CR1_TE | USART_CR1_RE;
     USART1->CR2 = USART_CR2_ABREN | USART_CR2_ABRMODE_Msk;
     USART1->CR1 |= USART_CR1_UE;
