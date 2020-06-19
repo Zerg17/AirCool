@@ -4,13 +4,13 @@
 
 #include <stdint.h>
 
-struct coreInfo{
+typedef struct{
     uint32_t SN;
     uint32_t VP;
     uint32_t D;
-};
+} coreInfo_t;
 
-struct coreSetting{
+typedef struct coreSetting{
     int16_t tCool;                  // Температура охлаждения
     int16_t tHeat;                  // Температура нагрева
 
@@ -33,10 +33,10 @@ struct coreSetting{
 
     int16_t alrmTmin;               // Критически низкая температура
     int16_t alrmTmax;               // Критически высокая температура
-    uint16_t heaterСurrentMin;      // Минимальный ток нагревателя
-    uint16_t heaterСurrentMax;      // Максимальный ток нагревателя
-    uint16_t compressorСurrentMin;  // Минимальный ток компрессора
-    uint16_t compressorСurrentMax;  // Максимальный ток компрессора
+    uint16_t heaterCurrentMin;      // Минимальный ток нагревателя
+    uint16_t heaterCurrentMax;      // Максимальный ток нагревателя
+    uint16_t compressorCurrentMin;  // Минимальный ток компрессора
+    uint16_t compressorCurrentMax;  // Максимальный ток компрессора
     uint16_t alrmVmin;              // Минимальное напряжение
     uint16_t alrmVmax;              // Максимальное напряжение
 
@@ -54,12 +54,10 @@ struct coreSetting{
     uint16_t flags[4];
 
     //uint16_t periodStat;
+} coreSetting_t;
 
-    uint16_t res[28];
-};
-
-struct coreStatus{
-    uint32_t time;    // Статус системы
+typedef struct {
+    uint32_t time;      // Вермя системы
     uint32_t status;    // Статус системы
     int16_t temp1;      // Температура на внешнем датчике
     int16_t temp2;      // Температура на внутреннем датчике
@@ -67,6 +65,10 @@ struct coreStatus{
     uint16_t rmpFan2;   // Обороты 2 вентилятора
     uint16_t voltage;   // Напряжение системы
     uint16_t current;   // Ток системы
-};
+} coreStatus_t;
+
+extern coreInfo_t coreInfo;
+extern coreSetting_t coreSetting;
+extern coreStatus_t coreStatus;
 
 #endif

@@ -1,14 +1,9 @@
 #include "system.h"
 #include "ssd1306.h"
+#include "rammap.h"
 
-#define B 3950
-#define S_R 10000
-#define T_R 10000
-#define N_T 25
-
-long map(long x, long in_min, long in_max, long out_min, long out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
+extern volatile uint8_t msgResponse;
+extern uint8_t msgType;
 
 unsigned char bufDisp[6][18];
 uint8_t posX=0;
@@ -24,8 +19,19 @@ void bufDispWrite(unsigned char c){
     }
     else{
         bufDisp[posY][posX]=c;
-        if(++posX==18)posX=0;
+        if(++posX==18){
+            posX=0;
+            posY=(posY+1)%6;
+            for(uint8_t i=0; i<18; i++)bufDisp[posY][i]=0;
+        }
     }
+}
+
+uint16_t crc;
+
+uint8_t crcf(uint8_t d){
+    crc+=d*211;
+    crc^=crc>>8;
 }
 
 int main(void){
@@ -35,16 +41,35 @@ int main(void){
     ssd1306_Init(0x3C);
     xdev_out(bufDispWrite);
 
+    xprintf("%d\n", sizeof(coreStatus_t));
+
+    while(!USART1->BRR);
+    xprintf("BRR: %u\n", F_CPU/USART1->BRR);
+
     while(1){
         ssd1306_Fill(0);
         for(uint8_t j=0; j<6; j++){
             ssd1306_SetCursor(0, j*10);
             for(uint8_t i=0; i<18; i++){
-                ssd1306_Char(bufDisp[(posY+j+1)%6][i]);
+                ssd1306_Char(bufDisp[(j+posY+1)%6][i]);
             }
         }
         ssd1306_UpdateScreen();
 
-        //xprintf("%u\n", TIM3->CNT);
+        if(msgResponse){
+            if(msgType==0){
+                crc=0;
+                uartWrite(0x55);crcf(0x55);
+                uartWrite(0x00);crcf(0x00);
+                uartWrite(0x00);crcf(0x00);
+                uartWrite(sizeof(coreStatus_t));crcf(sizeof(coreStatus_t));
+                for(uint8_t i=0; i<sizeof(coreStatus_t); i++){
+                    uartWrite(((uint8_t*)&coreStatus)[i]);
+                    crcf(((uint8_t*)&coreStatus)[i]);
+                }
+                uartWrite(crc);
+            }
+            msgResponse = 0;
+        }
     }
 }
