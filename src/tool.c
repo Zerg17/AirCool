@@ -1,4 +1,5 @@
 #include "tool.h"
+#include "system.h"
 
 #define abs(x) ((x)>0?(x):-(x))
 
@@ -41,7 +42,7 @@ int32_t tempCalc(int16_t a){
 
 uint16_t crc;
 
-uint8_t crcf(uint8_t d){
+void crcf(uint8_t d){
     crc+=d*211;
     crc^=crc>>8;
 }
@@ -51,8 +52,8 @@ void sendPack(uint8_t type, uint8_t* data, uint8_t len){
     crc=0x0F;
     uartWrite(0x55);
     uartWrite(0x00);
-    uartWrite(type);crcf(type);
     uartWrite(len);crcf(len);
+    uartWrite(type);crcf(type);
     for(uint8_t i=0; i<len; i++){
         uartWrite(data[i]);
         crcf(data[i]);

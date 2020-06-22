@@ -7,8 +7,8 @@
 
 #define BOAD 19200
 
-extern uint32_t tick;
-extern uint32_t sec;
+extern volatile uint32_t tick;
+extern volatile uint32_t sec;
 
 extern uint16_t adcR[2];
 extern uint16_t adcF[2];
@@ -20,5 +20,8 @@ void uartWrite(uint8_t d);
 void uartInit();
 void i2cInit();
 void adcInit();
+void flashInit();
+void flashSectorClear(uint32_t adr);
+void flashWrite(uint32_t adr, uint16_t data);
 
 #endif

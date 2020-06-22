@@ -8,9 +8,9 @@ uint8_t msgLen = 0;
 uint8_t msgResponse=0;
 uint8_t dataMsg[255];
 
-uint32_t tick=0;
+uint32_t volatile tick=0;
 uint32_t sec_d=0;
-uint32_t sec=0;
+uint32_t volatile sec=0;
 
 uint8_t aa=0;
 
@@ -23,10 +23,10 @@ void SysTick_Handler(void) {
 
     coreStatus.time=sec;
 
-    if(tick%200 == 0){
-        msgType=1;
-        msgResponse=1;
-    }
+    // if(tick%200 == 0){
+    //     msgType=1;
+    //     msgResponse=1;
+    // }
 
     if(msgFlug){
         if(msgType<3 && msgLen==0)msgResponse=1;

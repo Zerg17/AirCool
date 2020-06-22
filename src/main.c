@@ -11,6 +11,8 @@ unsigned char bufDisp[6][18];
 uint8_t posX=0;
 uint8_t posY=0;
 
+uint32_t t1, t2;
+
 void bufDispWrite(unsigned char c){
     if(c=='\n'){
         posX=0;
@@ -30,18 +32,17 @@ void bufDispWrite(unsigned char c){
 }
 
 int main(void){
-
     sysInit();
 
     ssd1306_Init(0x3C);
     xdev_out(bufDispWrite);
 
-    coreStatus.current=1000;
-    coreStatus.rmpFan1=2200;
-    coreStatus.rmpFan2=0;
-    coreStatus.temp1=2600;
-    coreStatus.temp2=1800;
-    coreStatus.voltage=5600;
+    // coreStatus.current=1000;
+    // coreStatus.rmpFan1=2200;
+    // coreStatus.rmpFan2=0;
+    // coreStatus.temp1=2600;
+    // coreStatus.temp2=1800;
+    // coreStatus.voltage=5600;
 
     while(1){
         // ssd1306_Fill(0);

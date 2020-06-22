@@ -5,10 +5,10 @@
 #include <stdint.h>
 
 #define tCool_DEF 3500
-#define tCool_MIN 2000
-#define tCool_MAX 6000
+#define tCool_MIN 2500
+#define tCool_MAX 5500
 
-#define tHeat_DEF 0
+#define tHeat_DEF 500
 #define tHeat_MIN -1000
 #define tHeat_MAX 1500
 
@@ -72,7 +72,7 @@
 #define fanSpeedRMP_MIN 500
 #define fanSpeedRMP_MAX 3000
 
-#define numPulsesFun_DEF 1
+#define numPulsesFun_DEF 2
 
 #define coolNumber_DEF 0
 
