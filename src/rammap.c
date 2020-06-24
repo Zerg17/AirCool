@@ -22,11 +22,11 @@ coreSetting_t coreSetting = {
     compressorCurrentMax_DEF,
     alrmVmin_DEF,
     alrmVmax_DEF,
-    minFanSpeedRMP_DEF,
-    fanSpeedRMP_DEF,
+    minFanSpeedRPM_DEF,
+    fanSpeedRPM_DEF,
     numPulsesFun_DEF,
-    minFanSpeedRMP_DEF,
-    fanSpeedRMP_DEF,
+    minFanSpeedRPM_DEF,
+    fanSpeedRPM_DEF,
     numPulsesFun_DEF,
     coolNumber_DEF,
     typePin_DEF
@@ -50,11 +50,11 @@ uint8_t checkSettingParam(coreSetting_t* st){
     if(st->compressorCurrentMax>compressorCurrentMax_MIN && st->compressorCurrentMax<compressorCurrentMax_MAX) return 22;
     if(st->alrmVmin>alrmVmin_MIN && st->alrmVmin<alrmVmin_MAX) return 23;
     if(st->alrmVmax>alrmVmax_MIN && st->alrmVmax<alrmVmax_MAX) return 24;
-    if(st->minFanSpeedRMP1>minFanSpeedRMP_MIN && st->minFanSpeedRMP1<minFanSpeedRMP_MAX) return 25;
-    if(st->fanSpeedRMP1>fanSpeedRMP_MIN && st->fanSpeedRMP1<fanSpeedRMP_MAX) return 26;
+    if(st->minFanSpeedRPM1>minFanSpeedRPM_MIN && st->minFanSpeedRPM1<minFanSpeedRPM_MAX) return 25;
+    if(st->fanSpeedRPM1>fanSpeedRPM_MIN && st->fanSpeedRPM1<fanSpeedRPM_MAX) return 26;
     if(st->numPulsesFun1<1) return 27;
-    if(st->minFanSpeedRMP2>minFanSpeedRMP_MIN && st->minFanSpeedRMP2<minFanSpeedRMP_MAX) return 28;
-    if(st->fanSpeedRMP2>fanSpeedRMP_MIN && st->fanSpeedRMP2<fanSpeedRMP_MAX) return 29;
+    if(st->minFanSpeedRPM2>minFanSpeedRPM_MIN && st->minFanSpeedRPM2<minFanSpeedRPM_MAX) return 28;
+    if(st->fanSpeedRPM2>fanSpeedRPM_MIN && st->fanSpeedRPM2<fanSpeedRPM_MAX) return 29;
     if(st->numPulsesFun2<1) return 30;
     if((st->tHeat+st->deltaTHeat)+1>(st->tCool-st->deltaTCool)) return 0x80;
     return 0;

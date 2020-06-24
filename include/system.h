@@ -10,8 +10,8 @@
 extern volatile uint32_t tick;
 extern volatile uint32_t sec;
 
-extern uint16_t adcR[2];
-extern uint16_t adcF[2];
+extern uint16_t adcR[4];
+extern uint16_t adcF[4];
 
 void sysInit();
 void rccInit();

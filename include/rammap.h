@@ -64,13 +64,13 @@
 #define alrmVmax_MIN 5000
 #define alrmVmax_MAX 6300
 
-#define minFanSpeedRMP_DEF 1000
-#define minFanSpeedRMP_MIN 500
-#define minFanSpeedRMP_MAX 2000
+#define minFanSpeedRPM_DEF 1000
+#define minFanSpeedRPM_MIN 500
+#define minFanSpeedRPM_MAX 2000
 
-#define fanSpeedRMP_DEF 2300
-#define fanSpeedRMP_MIN 500
-#define fanSpeedRMP_MAX 3000
+#define fanSpeedRPM_DEF 2300
+#define fanSpeedRPM_MIN 500
+#define fanSpeedRPM_MAX 3000
 
 #define numPulsesFun_DEF 2
 
@@ -114,11 +114,11 @@ typedef struct coreSetting{
     uint16_t alrmVmin;              // Минимальное напряжение
     uint16_t alrmVmax;              // Максимальное напряжение
 
-    uint16_t minFanSpeedRMP1;       // Минимальные обороты 1 вентилятора
-    uint16_t fanSpeedRMP1;          // Номинальные обороты 1 вентилятора
+    uint16_t minFanSpeedRPM1;       // Минимальные обороты 1 вентилятора
+    uint16_t fanSpeedRPM1;          // Номинальные обороты 1 вентилятора
     uint16_t numPulsesFun1;         // Импульсов на оборот 1 вентилятора
-    uint16_t minFanSpeedRMP2;       // Минимальные обороты 2 вентилятора
-    uint16_t fanSpeedRMP2;          // Номинальные обороты 2 вентилятора
+    uint16_t minFanSpeedRPM2;       // Минимальные обороты 2 вентилятора
+    uint16_t fanSpeedRPM2;          // Номинальные обороты 2 вентилятора
     uint16_t numPulsesFun2;         // Импульсов на оборот 2 вентилятора
 
     uint16_t coolNumber;            // Номер вентилятора

@@ -76,8 +76,8 @@ void flashWrite(uint32_t adr, uint16_t data){
     FLASH->CR &= ~FLASH_CR_PG;
 }
 
-uint16_t adcR[2];
-uint16_t adcF[2];
+uint16_t adcR[4];
+uint16_t adcF[4];
 
 void adcInit(){
     ADC1->CR = ADC_CR_ADCAL;
@@ -87,9 +87,9 @@ void adcInit(){
     while(!(ADC1->ISR & ADC_ISR_ADRDY));
 
     ADC1->CFGR1 = ADC_CFGR1_DMACFG | ADC_CFGR1_DMAEN | ADC_CFGR1_EXTEN_0 | ADC_CFGR1_EXTSEL_1 | ADC_CFGR1_EXTSEL_0;
-    ADC1->CHSELR = 0b1;
+    ADC1->CHSELR = 0b1111;
 
-    DMA1_Channel1->CNDTR = 1;
+    DMA1_Channel1->CNDTR = 4;
     DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));
     DMA1_Channel1->CMAR = (uint32_t)adcR;
     DMA1_Channel1->CCR = DMA_CCR_MSIZE_0 | DMA_CCR_PSIZE_0 | DMA_CCR_MINC | DMA_CCR_CIRC | DMA_CCR_TCIE;

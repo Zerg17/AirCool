@@ -18,10 +18,15 @@ void SysTick_Handler(void) {
     tick++;
     if(++sec_d==100){
         sec_d=0;
-        sec++;   
+        sec++;
     }
 
     coreStatus.time=sec;
+
+    if(tick%100 == 0){
+        coreStatus.temp1+=10;
+        if(coreStatus.temp1>12500)coreStatus.temp1=-5000;
+    }
 
     // if(tick%200 == 0){
     //     msgType=1;
@@ -35,11 +40,13 @@ void SysTick_Handler(void) {
 }
 
 void DMA1_Channel1_IRQHandler(void){
-    static uint32_t acc[2] = {2048*1024, 2048*1024};
+    static uint32_t acc[4] = {2048*1024, 2048*1024};
     if(DMA1->ISR & DMA_ISR_TCIF1){
         DMA1->IFCR=DMA_IFCR_CTCIF1;
-        acc[0]+=adcR[0]-adcF[0];
-        adcF[0]=acc[0]/1024;
+        for(uint8_t i=0; i<4; i++){
+            acc[i]+=adcR[i]-adcF[i];
+            adcF[i]=acc[i]/1024;
+        }
     }
 }
 
@@ -80,10 +87,8 @@ void USART1_IRQHandler(void){
     }
     if(USART1->ISR & USART_ISR_ORE){    // Overrun error    
         USART1->ICR = USART_ICR_ORECF;
-        xprintf("O");
     }
     if(USART1->ISR & USART_ISR_NE){     //  START bit Noise detection flag
         USART1->ICR = USART_ICR_NCF;
-        xprintf("N");
     }
 }
