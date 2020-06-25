@@ -10,6 +10,7 @@
 
 #define SSD1306_WIDTH 128
 #define SSD1306_HEIGHT 64
+#define INDENT 4
 
 extern uint8_t SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
 

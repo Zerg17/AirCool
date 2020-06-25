@@ -213,19 +213,35 @@ void ssd1306_DrawRect(int16_t x0, int16_t y0, int16_t x1, int16_t y1, SSD1306_CO
 
 void ssd1306_WriteChar(char ch, FontDef Font, SSD1306_COLOR color){
   uint32_t pixel, x;
-  if ((((SSD1306.CurrentX + Font.FontWidth) < SSD1306_WIDTH)  && ((SSD1306.CurrentY + Font.FontHeight) < SSD1306_HEIGHT))){
-    for (uint32_t y = 0; y < Font.FontHeight; y++){
-      if(ch < 127) pixel = Font.fontEn[(ch - 32) * Font.FontHeight + y];
-      else pixel = Font.fontRu[(ch - 192) * Font.FontHeight + y]; 
-      x = Font.FontWidth;
-      while(x--){
-        if (pixel & 0x0001) ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), color);
-        else ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), !color);
-        pixel >>= 1;
-      }
-    }
-  }
-  SSD1306.CurrentX += Font.FontWidth;
+
+	if(ch=='\r'){
+	  SSD1306.CurrentX=INDENT;
+	  return;
+  	}
+  	if(ch=='\n'){
+	  	SSD1306.CurrentX=INDENT;
+	  	SSD1306.CurrentY+=Font.FontHeight;
+	  	return;
+  	}
+
+  	if((SSD1306.CurrentX + Font.FontWidth) > SSD1306_WIDTH){
+	  	SSD1306.CurrentX=INDENT;
+	  	SSD1306.CurrentY+=Font.FontHeight;
+  	}
+
+  	if (((SSD1306.CurrentY + Font.FontHeight) < SSD1306_HEIGHT)){
+    	for (uint32_t y = 0; y < Font.FontHeight; y++){
+      		if(ch < 127) pixel = Font.fontEn[(ch - 32) * Font.FontHeight + y];
+      		else pixel = Font.fontRu[(ch - 192) * Font.FontHeight + y]; 
+      		x = Font.FontWidth;
+      		while(x--){
+        		if (pixel & 0x0001) ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), color);
+        		else ssd1306_DrawPixel(SSD1306.CurrentX + x, (SSD1306.CurrentY + y), !color);
+        		pixel >>= 1;
+      		}
+    	}
+  	}
+  	SSD1306.CurrentX += Font.FontWidth;
 }
 
 void ssd1306_Char(unsigned char ch){
