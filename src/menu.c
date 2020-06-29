@@ -129,6 +129,7 @@ uint8_t numPrint(uint8_t n, uint8_t x){
         case 10: b=dot; break;
         case 11: b=dotdot; break;
         case 12: b=minus; break;
+        default: b=minus;
     }
     for(uint8_t i=0; i<w*4; i++)
         SSD1306_Buffer[i%w+(i/w*128)+128*3+x]=b[i];
@@ -174,33 +175,32 @@ void drawWait(uint16_t t){
 }
 
 void drawErr(uint8_t err){
-    char bufC[20];
+    char bufC[40];
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
-    xsprintf(bufC, "˜˜˜˜˜˜:E%u", err);
+    xsprintf(bufC, "ĞÑˆĞ¸Ğ±ĞºĞ°:E%u", err);
     ssd1306_SetCursor(32,4);
     ssd1306_WriteString(bufC, Font_7x9, White);
     ssd1306_SetCursor(INDENT, 20);
     switch(err){
         case 0:  ssd1306_WriteString("-", Font_7x9, White); break;
-        case 1:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 2:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜ 2", Font_7x9, White); break;
-        case 3:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 4:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜ 2", Font_7x9, White); break;
-        case 5:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 6:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 7:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 8:  ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 9:  ssd1306_WriteString("-", Font_7x9, White); break;
-        case 10: ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 11: ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
+        case 1:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ²Ğ½ÑƒÑ‚Ñ€ĞµĞ½Ğ½ĞµĞ³Ğ¾ Ğ²ĞµĞ½Ñ‚Ğ¸Ğ»ÑÑ‚Ğ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 2:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» 2 Ğ²Ğ½ÑƒÑ‚Ñ€ĞµĞ½Ğ½ĞµĞ³Ğ¾ Ğ²ĞµĞ½Ñ‚Ğ¸Ğ»ÑÑ‚Ğ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 3:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ²Ğ½ĞµÑˆĞ½ĞµĞ³Ğ¾ Ğ²ĞµĞ½Ñ‚Ğ¸Ğ»ÑÑ‚Ğ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 4:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» 2 Ğ²Ğ½ĞµÑˆĞ½ĞµĞ³Ğ¾ Ğ²ĞµĞ½Ñ‚Ğ¸Ğ»ÑÑ‚Ğ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 5:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» ÑĞ»Ğ°Ğ±Ğ¾Ğ³Ğ¾ Ñ‚Ğ¾ĞºĞ° ĞºĞ¾Ğ¼Ğ¿Ñ€ĞµÑÑĞ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 6:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ¿Ñ€ĞµĞ²Ñ‹ÑˆĞµĞ½Ğ¸Ñ Ñ‚Ğ¾ĞºĞ° ĞºĞ¾Ğ¼Ğ¿Ñ€ĞµÑÑĞ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 7:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ´Ğ°Ñ‚Ñ‡Ğ¸ĞºĞ° Ğ²Ğ½ÑƒÑ‚Ñ€ĞµĞ½Ğ½ĞµĞ¹ Ñ‚ĞµĞ¼Ğ¿ĞµÑ€Ğ°Ñ‚ÑƒÑ€Ñ‹", Font_7x9, White); break;
+        case 8:  ssd1306_WriteString("-", Font_7x9, White); break;
+        case 9:  ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ´Ğ°Ñ‚Ñ‡Ğ¸ĞºĞ° Ñ‚ĞµĞ¼Ğ¿ĞµÑ€Ğ°Ñ‚ÑƒÑ€Ñ‹ ĞºĞ¾Ğ½Ğ´ĞµĞ½ÑĞ°Ñ‚Ğ¾Ñ€Ğ°", Font_7x9, White); break;
+        case 10: ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ²Ñ‹ÑĞ¾ĞºĞ¾Ğ¹ Ñ‚ĞµĞ¼Ğ¿ĞµÑ€Ğ°Ñ‚ÑƒÑ€Ñ‹", Font_7x9, White); break;
+        case 11: ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ½Ğ¸Ğ·ĞºĞ¾Ğ¹ Ñ‚ĞµĞ¼Ğ¿ĞµÑ€Ğ°Ñ‚ÑƒÑ€Ñ‹", Font_7x9, White); break;
         case 12: ssd1306_WriteString("-", Font_7x9, White); break;
-        case 13: ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 14: ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
-        case 15: ssd1306_WriteString("˜˜˜˜˜˜˜˜˜ ˜˜˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜ ˜˜˜˜ ˜˜˜˜˜˜˜˜˜˜˜", Font_7x9, White); break;
+        case 13: ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ¿Ğ°Ğ½ĞµĞ»Ğ¸ ÑƒĞ¿Ñ€Ğ°Ğ²Ğ»ĞµĞ½Ğ¸Ñ", Font_7x9, White); break;
+        case 14: ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ½Ğ¸Ğ·ĞºĞ¾Ğ³Ğ¾ Ñ‚Ğ¾ĞºĞ° Ğ½Ğ°Ğ³Ñ€ĞµĞ²Ğ°Ñ‚ĞµĞ»Ñ", Font_7x9, White); break;
+        case 15: ssd1306_WriteString("ĞĞ²Ğ°Ñ€Ğ¸Ğ¹Ğ½Ñ‹Ğ¹ ÑĞ¸Ğ³Ğ½Ğ°Ğ» Ğ¿Ñ€ĞµĞ²Ñ‹ÑˆĞµĞ½Ğ¸Ñ Ñ‚Ğ¾ĞºĞ° Ğ½Ğ°Ğ³Ñ€ĞµĞ²Ğ°Ñ‚ĞµĞ»Ñ", Font_7x9, White); break;
     } 
 }
-
 void drawMain(int16_t t, uint16_t rmp, uint16_t v, uint16_t a){
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
@@ -220,4 +220,9 @@ void drawMain(int16_t t, uint16_t rmp, uint16_t v, uint16_t a){
     xprintf("%uA", a/100%100);
 
     printTemp(t);
+}
+
+void drawDebug(int32_t a1, int32_t a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6){
+    ssd1306_SetCursor(INDENT, 0);
+    xprintf("A1=%u\nA2=%d\nA3=%d\nA4=%d\nV=%d.%03d\nA6=%u\n", a1, a2, a3, a4, a5/1000, a5%1000, a6);
 }

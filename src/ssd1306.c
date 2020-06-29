@@ -106,12 +106,13 @@ uint8_t SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8] = {
 		0x00, 0x00, 0x00, 0x00
 };
 
-static void ssd1306_SendToDisplay(SSD1306_DATA_TYPE type, uint8_t *data, uint8_t length);
+static void ssd1306_SendToDisplay(SSD1306_DATA_TYPE type, uint8_t *data, uint16_t length);
 
 static SSD1306_t SSD1306;
 
-void ssd1306_Init(uint8_t address){	
-  SSD1306.Address = address;
+void ssd1306_Init(){
+	CS_SET;
+	RESET_SET;
   // Waiting for SEG/COM ON after reset
   //for(volatile uint32_t i=0; i<100000; i++);
   // Initialize LCD
@@ -275,14 +276,15 @@ void ssd1306_DisplayOff(){
   ssd1306_SendToDisplay(Commands, contrast_data, 1);
 }
 
-static void ssd1306_SendToDisplay(SSD1306_DATA_TYPE type, uint8_t *data, uint8_t length){
-  	I2C1->CR2 = (SSD1306.Address<<1)|(((length+1))<<16);
-	I2C1->CR2 |= I2C_CR2_START | I2C_CR2_AUTOEND | I2C_CR2_PECBYTE;
+static void ssd1306_SendToDisplay(SSD1306_DATA_TYPE type, uint8_t *data, uint16_t length){
+	if(type) DC_SET;
+	else DC_RES;
 
-	I2C1->TXDR = type;
-    while(!(I2C1->ISR & I2C_ISR_STOPF)){
-        if((I2C1->ISR & I2C_ISR_TXIS))
-            I2C1->TXDR = *data++;
-    }
-    I2C1->ICR |= I2C_ICR_STOPCF;
+  	CS_RES;
+   	for(uint16_t i=0; i<length; i++){
+		*(uint8_t *)&(SPI1->DR) = data[i];
+		while((SPI1->SR & SPI_SR_FTLVL) == SPI_SR_FTLVL);
+	}
+	while((SPI1->SR & SPI_SR_BSY));
+    CS_SET;
 }

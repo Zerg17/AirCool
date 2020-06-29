@@ -6,7 +6,14 @@
 #include "fonts.h"
 #include "system.h"
 
-#define SSD1306_ADDRESS 0x78
+#define DC_SET GPIOA->BSRR = GPIO_BSRR_BS_11
+#define DC_RES GPIOA->BRR = GPIO_BRR_BR_11
+
+#define CS_SET GPIOA->BSRR = GPIO_BSRR_BS_4
+#define CS_RES GPIOA->BRR = GPIO_BRR_BR_4
+
+#define RESET_SET GPIOF->BSRR = GPIO_BSRR_BS_0
+#define RESET_RES GPIOF->BRR = GPIO_BRR_BR_0
 
 #define SSD1306_WIDTH 128
 #define SSD1306_HEIGHT 64
@@ -27,10 +34,9 @@ typedef enum {
 typedef struct {
   uint32_t CurrentX;
   uint32_t CurrentY;
-  uint8_t Address;
 } SSD1306_t;
 
-void ssd1306_Init(uint8_t address);
+void ssd1306_Init();
 void ssd1306_Fill(SSD1306_COLOR color);
 void ssd1306_UpdateScreen(void);
 void ssd1306_DrawPixel(uint32_t x, uint32_t y, SSD1306_COLOR color);

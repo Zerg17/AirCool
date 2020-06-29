@@ -2,6 +2,8 @@
 #include "system.h"
 #include "rammap.h"
 
+uint16_t volatile rpm;
+
 uint8_t msgFlug = 0;
 uint8_t msgType = 0;
 uint8_t msgLen = 0;
@@ -39,13 +41,26 @@ void SysTick_Handler(void) {
     }
 }
 
+void EXTI4_15_IRQHandler(){
+    uint16_t t = TIM14->CNT;
+    static uint16_t lt;
+
+    if((EXTI->PR & EXTI_PR_PR12) == EXTI_PR_PR12){
+        EXTI->PR |= EXTI_PR_PR12;
+        if(t-lt>1200){
+            rpm=4800000/(t-lt);
+            lt=t;
+        }
+    }
+}
+
 void DMA1_Channel1_IRQHandler(void){
-    static uint32_t acc[4] = {2048*1024, 2048*1024};
+    static uint32_t acc[4] = {2048*512, 2048*512, 2800*512};
     if(DMA1->ISR & DMA_ISR_TCIF1){
         DMA1->IFCR=DMA_IFCR_CTCIF1;
         for(uint8_t i=0; i<4; i++){
             acc[i]+=adcR[i]-adcF[i];
-            adcF[i]=acc[i]/1024;
+            adcF[i]=acc[i]/512;
         }
     }
 }

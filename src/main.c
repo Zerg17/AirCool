@@ -34,7 +34,7 @@ void bufDispWrite(unsigned char c){
 int main(void){
     sysInit();
 
-    ssd1306_Init(0x3C);
+    ssd1306_Init();
     xdev_out(ssd1306_Char);
     //xdev_out(bufDispWrite);
 
@@ -45,7 +45,7 @@ int main(void){
     coreStatus.temp2=1800;
     coreStatus.voltage=5600;
 
-    while(sec<1);
+    //while(sec<5);
 
     while(1){
         // ssd1306_Fill(0);
@@ -58,29 +58,13 @@ int main(void){
         // ssd1306_UpdateScreen();
 
         ssd1306_Fill(0);
-        // ssd1306_DrawRect(0, 0, 127, 63, 1);
-        // ssd1306_DrawLine(0, 16, 127, 16, 1);
-        // ssd1306_DrawLine(70, 16, 70, 63, 1);
-        // ssd1306_DrawLine(70, 42, 127, 42, 1);
-        // ssd1306_DrawLine(97, 42, 97, 63, 1);
-        // ssd1306_SetCursor(64-sizeof(WAIT_MSG)/2*7,4);
-        // ssd1306_WriteString(WAIT_MSG, Font_7x9, White);
-
-        // ssd1306_SetCursor(76, 26);
-        // xprintf("%dRPM", coreStatus.rmpFan1);
-
-        // ssd1306_SetCursor(74, 49);
-        // xprintf("%uA", coreStatus.current/100);
-
-        // ssd1306_SetCursor(103, 49);
-        // xprintf("%uV", coreStatus.voltage/100);
-
-        // printTemp(coreStatus.temp1);
         
-        //drawWait(305-sec);
-        //drawErr(sec/5%16);
-        drawMain(2500, 2300, 5300, 1500);
-
+        if(sec<0)drawWait(10-sec);
+        else{
+            drawErr(sec/5%16);
+            //drawMain(2500, 2300, 5300, 1500);
+            //drawDebug(rpm, adcF[1], adcF[2], adcF[3], (adcF[2])*3377/200+750, TIM14->CNT);
+        }
         ssd1306_UpdateScreen();
 
         if(msgResponse){
