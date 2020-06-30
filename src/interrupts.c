@@ -2,7 +2,7 @@
 #include "system.h"
 #include "rammap.h"
 
-uint16_t volatile rpm;
+uint16_t volatile rpm1, rpm2;
 
 uint8_t msgFlug = 0;
 uint8_t msgType = 0;
@@ -22,12 +22,18 @@ void SysTick_Handler(void) {
         sec_d=0;
         sec++;
     }
-
+    //TIM3->CCR2 = sec%40>20?2500:5000; 
+    
     coreStatus.time=sec;
 
-    if(tick%100 == 0){
-        coreStatus.temp1+=10;
-        if(coreStatus.temp1>12500)coreStatus.temp1=-5000;
+
+    if(tick%10==0){
+        xfprintf(uartWrite, "%u\n", rpm2);
+    }
+
+    if(tick%40==0){
+        buff[aa++]=rpm2/32;
+        if(aa==128)aa=0;
     }
 
     // if(tick%200 == 0){
@@ -43,13 +49,30 @@ void SysTick_Handler(void) {
 
 void EXTI4_15_IRQHandler(){
     uint16_t t = TIM14->CNT;
-    static uint16_t lt;
+    static uint16_t lt1, lt2;
+
+    if((EXTI->PR & EXTI_PR_PR4) == EXTI_PR_PR4){
+        EXTI->PR |= EXTI_PR_PR4;
+        uint16_t dt=t-lt1;
+        if(dt>2400U){
+            for(volatile uint16_t i=0; i<400; i++);
+            for(volatile uint8_t i=0; i<25; i++);
+            if(!(GPIOB->IDR & GPIO_IDR_4)){
+                rpm1=9600000/dt;
+                lt1=t; 
+            }
+        }
+    }
 
     if((EXTI->PR & EXTI_PR_PR12) == EXTI_PR_PR12){
         EXTI->PR |= EXTI_PR_PR12;
-        if(t-lt>1200){
-            rpm=4800000/(t-lt);
-            lt=t;
+        uint16_t dt=t-lt2;
+        if(dt>2400U){
+            for(volatile uint16_t i=0; i<400; i++);
+            if(!(GPIOA->IDR & GPIO_IDR_12)){
+                rpm2=9600000/dt;
+                lt2=t; 
+            }
         }
     }
 }

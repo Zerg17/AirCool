@@ -6,64 +6,27 @@
 
 extern volatile uint8_t msgResponse;
 extern uint8_t msgType;
-
-unsigned char bufDisp[6][18];
-uint8_t posX=0;
-uint8_t posY=0;
-
-uint32_t t1, t2;
-
-void bufDispWrite(unsigned char c){
-    if(c=='\n'){
-        posX=0;
-        posY=(posY+1)%6;
-        for(uint8_t i=0; i<18; i++)bufDisp[posY][i]=0;
-    }else if(c=='\r'){
-        posX=0;
-    }
-    else{
-        bufDisp[posY][posX]=c;
-        if(++posX==18){
-            posX=0;
-            posY=(posY+1)%6;
-            for(uint8_t i=0; i<18; i++)bufDisp[posY][i]=0;
-        }
-    }
-}
+extern uint8_t aa;
 
 int main(void){
     sysInit();
 
     ssd1306_Init();
     xdev_out(ssd1306_Char);
-    //xdev_out(bufDispWrite);
-
-    coreStatus.current=1000;
-    coreStatus.rmpFan1=2200;
-    coreStatus.rmpFan2=0;
-    coreStatus.temp1=-2000;
-    coreStatus.temp2=1800;
-    coreStatus.voltage=5600;
 
     //while(sec<5);
 
     while(1){
-        // ssd1306_Fill(0);
-        // for(uint8_t j=0; j<6; j++){
-        //     ssd1306_SetCursor(0, j*10);
-        //     for(uint8_t i=0; i<18; i++){
-        //         ssd1306_Char(bufDisp[(j+posY+1)%6][i]);
-        //     }
-        // }
-        // ssd1306_UpdateScreen();
-
         ssd1306_Fill(0);
-        
+        for(volatile uint32_t i=0; i<100000; i++);
         if(sec<0)drawWait(10-sec);
         else{
-            drawErr(sec/5%16);
+            for(uint8_t i=0; i<128; i++)ssd1306_DrawPixel(i, 63-buff[(i+aa)%128], 1);
+            ssd1306_SetCursor(4, 0);
+            xprintf("%u\n%u\nALM1=%u\nALM2=%u\n", rpm1, rpm2, (GPIOA->IDR & GPIO_IDR_5) == 0, (GPIOA->IDR & GPIO_IDR_8) == 0);
+            //drawErr(sec/5%16);
             //drawMain(2500, 2300, 5300, 1500);
-            //drawDebug(rpm, adcF[1], adcF[2], adcF[3], (adcF[2])*3377/200+750, TIM14->CNT);
+            //drawDebug(rpm, 0, 0, 0, 0, sec);
         }
         ssd1306_UpdateScreen();
 

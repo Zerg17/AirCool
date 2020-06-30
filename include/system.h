@@ -5,9 +5,12 @@
 #include "stm32f0xx.h"
 #include "xprintf.h"
 
-#define BOAD 19200
+#define BOAD 500000
 
-extern volatile uint16_t rpm;
+extern uint8_t buff[128];
+
+extern volatile uint16_t rpm1;
+extern volatile uint16_t rpm2;
 
 extern volatile uint32_t tick;
 extern volatile uint32_t sec;

@@ -222,7 +222,7 @@ void drawMain(int16_t t, uint16_t rmp, uint16_t v, uint16_t a){
     printTemp(t);
 }
 
-void drawDebug(int32_t a1, int32_t a2, int32_t a3, int32_t a4, int32_t a5, int32_t a6){
+void drawDebug(uint32_t a1, uint32_t a2, uint32_t a3, int32_t a4, int32_t a5, int32_t a6){
     ssd1306_SetCursor(INDENT, 0);
-    xprintf("A1=%u\nA2=%d\nA3=%d\nA4=%d\nV=%d.%03d\nA6=%u\n", a1, a2, a3, a4, a5/1000, a5%1000, a6);
+    xprintf("A1=%d\nA2=%d\nA3=%d\nA4=%u\nA5=%d\nA6=%u\n", a1, a2, a3, a4, a5, a6);
 }
