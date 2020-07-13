@@ -2,8 +2,6 @@
 #include "system.h"
 #include "ssd1306.h"
 
-#define abs(x) ((x)>0?(x):-(x))
-
 int32_t logfix (uint32_t x){
     int32_t b = 1U << (16 - 1);
     int32_t y = 0;

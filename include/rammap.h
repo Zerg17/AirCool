@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define tCool_DEF 3500
+#define tCool_DEF 3200
 #define tCool_MIN 2500
 #define tCool_MAX 5500
 
@@ -40,21 +40,21 @@
 #define alrmTmax_MIN -4000
 #define alrmTmax_MAX 2000
 
-#define heaterCurrentMin_DEF 100
-#define heaterCurrentMin_MIN 100
-#define heaterCurrentMin_MAX 3000
+#define heaterCurrentMin_DEF 20
+#define heaterCurrentMin_MIN 20
+#define heaterCurrentMin_MAX 300
 
-#define heaterCurrentMax_DEF 3000
+#define heaterCurrentMax_DEF 300
 #define heaterCurrentMax_MIN 100
-#define heaterCurrentMax_MAX 3000
+#define heaterCurrentMax_MAX 300
 
-#define compressorCurrentMin_DEF 100
-#define compressorCurrentMin_MIN 100
-#define compressorCurrentMin_MAX 3000
+#define compressorCurrentMin_DEF 20
+#define compressorCurrentMin_MIN 20
+#define compressorCurrentMin_MAX 100
 
-#define compressorCurrentMax_DEF 3000
+#define compressorCurrentMax_DEF 300
 #define compressorCurrentMax_MIN 100
-#define compressorCurrentMax_MAX 3000
+#define compressorCurrentMax_MAX 300
 
 #define alrmVmin_DEF 4000
 #define alrmVmin_MIN 4000
@@ -77,6 +77,15 @@
 #define coolNumber_DEF 0
 
 #define typePin_DEF 0
+
+#define CRITICAL_ERR 0x000037F0
+
+enum coreMode{
+    waitMode,
+    coolMode,
+    heatMode,
+    testMode
+};
 
 typedef struct{
     uint32_t SN;
@@ -131,14 +140,34 @@ typedef struct coreSetting{
 } coreSetting_t;
 
 typedef struct {
-    uint32_t time;      // Вермя системы
-    uint32_t status;    // Статус системы
-    int16_t temp1;      // Температура на внешнем датчике
-    int16_t temp2;      // Температура на внутреннем датчике
-    uint16_t rmpFan1;   // Обороты 1 вентилятора
-    uint16_t rmpFan2;   // Обороты 2 вентилятора
-    uint16_t voltage;   // Напряжение системы
-    uint16_t current;   // Ток системы
+    uint32_t time;              // Вермя системы
+    union{
+        struct{
+            uint32_t mode:2;            // Режим работы
+            uint32_t lowTemp:1;         // Слишком низкая температура
+            uint32_t highTemp:1;        // Слишком высокая температура
+            uint32_t lowCurrentHeat:1;  // Слишком низкий ток нагревателя
+            uint32_t highCurrentHeat:1; // Слишком высокий ток нагревателя
+            uint32_t lowCurrentCool:1;  // Слишком низкий ток компрессора
+            uint32_t highCurrentCool:1; // Слишком высокий ток компрессора
+            uint32_t lowVoltage:1;      // Слишком низкое напряжение
+            uint32_t highVoltage:1;     // Слишком высокой напряжение
+            uint32_t errFun1:1;         // Ошибка вентилятора 1
+            uint32_t errFun2:1;         // Ошибка вентилятора 2
+            uint32_t errTmp1:1;         // Ошибка датчика температуры 1
+            uint32_t errTmp2:1;         // Ошибка датчика температуры 1
+            uint32_t heatOn:1;          // Нагреватель включен
+            uint32_t coolOn:1;          // Компрессор включен
+            uint32_t reserved:16;
+            };
+        uint32_t status;
+    };
+    int16_t temp1;              // Температура на внешнем датчике
+    int16_t temp2;              // Температура на внутреннем датчике
+    uint16_t rmpFan1;           // Обороты 1 вентилятора
+    uint16_t rmpFan2;           // Обороты 2 вентилятора
+    uint16_t voltage;           // Напряжение системы
+    uint16_t current;           // Ток системы
 } coreStatus_t;
 
 extern coreInfo_t coreInfo;

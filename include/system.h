@@ -7,12 +7,23 @@
 
 #define BOAD 500000
 
+#define ALARM_ON  GPIOB->BSRR = GPIO_BSRR_BS_7
+#define ALARM_OFF GPIOB->BSRR = GPIO_BSRR_BR_7
+
+#define COOL_ON  GPIOB->BSRR = GPIO_BSRR_BS_1
+#define COOL_OFF GPIOB->BSRR = GPIO_BSRR_BR_1
+
+#define HEAT_ON  GPIOB->BSRR = GPIO_BSRR_BS_0
+#define HEAT_OFF GPIOB->BSRR = GPIO_BSRR_BR_0
+
 extern uint8_t buff[128];
 
-extern volatile uint16_t rpm1;
-extern volatile uint16_t rpm2;
+extern volatile uint16_t rpm1, rpm2;
+extern int32_t term1, term2;
+extern uint16_t voltage, current;
 
 extern volatile uint32_t tick;
+extern volatile uint32_t sec_d;
 extern volatile uint32_t sec;
 
 extern uint16_t adcR[4];
