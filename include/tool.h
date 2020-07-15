@@ -10,7 +10,6 @@
 #define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
 
 int32_t tempCalc(int16_t a);
-void sendPack(uint8_t type, uint8_t* data, uint8_t len);
 void printTemp(int32_t t);
 
 #endif

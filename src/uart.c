@@ -23,6 +23,26 @@ void uartInit(){
     NVIC_EnableIRQ(USART1_IRQn);
 }
 
+uint16_t crc;
+
+void crcf(uint8_t d){
+    crc+=d*211;
+    crc^=crc>>8;
+}
+
+void sendPack(uint8_t type, uint8_t* data, uint8_t len){
+    crc=0x0F;
+    uartWrite(0x55);
+    uartWrite(0x00);
+    uartWrite(len);crcf(len);
+    uartWrite(type);crcf(type);
+    for(uint8_t i=0; i<len; i++){
+        uartWrite(data[i]);
+        crcf(data[i]);
+    }
+    uartWrite(crc);
+}
+
 void USART1_IRQHandler(void){
     static uint16_t crc;
     static uint8_t status=0;

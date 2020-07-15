@@ -5,7 +5,7 @@
 #include "stm32f0xx.h"
 #include "xprintf.h"
 
-#define BOAD 500000
+#define BOAD 19200
 
 #define ALARM_ON  GPIOB->BSRR = GPIO_BSRR_BS_7
 #define ALARM_OFF GPIOB->BSRR = GPIO_BSRR_BR_7
@@ -21,6 +21,8 @@ extern uint8_t buff[128];
 extern volatile uint16_t rpm1, rpm2;
 extern int32_t term1, term2;
 extern uint16_t voltage, current;
+
+extern volatile uint8_t msgResponse, msgResponseType;
 
 extern volatile uint32_t tick;
 extern volatile uint32_t sec_d;

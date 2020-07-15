@@ -12,6 +12,8 @@ volatile uint16_t rpm1=0, rpm2=0;
 int32_t term1, term2;
 uint16_t voltage, current;
 
+volatile uint8_t msgResponse=0, msgResponseType=0;
+
 void SysTick_Handler(void) {
     tick++;
     if(++sec_d==100){
@@ -33,8 +35,22 @@ void SysTick_Handler(void) {
     voltage = adcF[2]*3377/2000+80;
     current = adcF[3]*5283/20000;
 
+    coreStatus.time = sec;
+    coreStatus.temp1 = term1;
+    coreStatus.temp2 = term2;
+    coreStatus.rpmFan1 = rpm1;
+    coreStatus.rpmFan2 = rpm2;
+    coreStatus.voltage = voltage;
+    coreStatus.current = current;
+
+    // if(tick%100==0){
+    //     xfprintf(uartWrite, "%u %d %d %u %u %02X\n", sec, term1, term2, voltage, current, coreStatus.status);
+    // }
+
     if(tick%100==0){
-        xfprintf(uartWrite, "%u %d %d %u %u %02X\n", sec, term1, term2, voltage, current, coreStatus.status);
+        msgResponseType=1;
+        msgResponse=1;
+
     }
 
     logicProc();
@@ -50,6 +66,7 @@ void gpioInit(){
     // PA15 - SERIAL_RX     - USART1_RX
     // PA12 - THO_OUT       - EXTI4_15
     // PA11 - SSD1306_DC    - GPIO_OUT
+    // PA9  - SERIAL_TX     - USART1_TX
     // PA8  - ALM2          - GPIO_IN
     // PA7  - OU_EXT        - TIM3_CH2
     // PA6  - OU_INT        - TIM3_CH1
@@ -60,7 +77,6 @@ void gpioInit(){
     // PA1  - TEMP2         - ADC1
     // PA0  - TEMP1         - ADC0
     // PB7  - ALARM         - GPIO_OUT
-    // PB6  - SERIAL_TX     - USART1_TX
     // PB5  - SSD1306_SDA   - SPI
     // PB4  - THO_IN        - EXTI4_15
     // PB3  - SSD1306_SCK   - SPI
@@ -72,10 +88,10 @@ void gpioInit(){
     // 1 - Alternate function
     // Msk - Analog mode
 
-    GPIOA->MODER |= GPIO_MODER_MODER15_1 | GPIO_MODER_MODER11_0 | GPIO_MODER_MODER7_1 | GPIO_MODER_MODER6_1 | GPIO_MODER_MODER4_0 | GPIO_MODER_MODER3_Msk | GPIO_MODER_MODER2_Msk | GPIO_MODER_MODER1_Msk | GPIO_MODER_MODER0_Msk;
-    GPIOB->MODER |= GPIO_MODER_MODER7_0 | GPIO_MODER_MODER6_1 | GPIO_MODER_MODER5_1 | GPIO_MODER_MODER3_1 | GPIO_MODER_MODER1_0 | GPIO_MODER_MODER0_0;
+    GPIOA->MODER |= GPIO_MODER_MODER15_1 | GPIO_MODER_MODER11_0 | GPIO_MODER_MODER9_1 | GPIO_MODER_MODER7_1 | GPIO_MODER_MODER6_1 | GPIO_MODER_MODER4_0 | GPIO_MODER_MODER3_Msk | GPIO_MODER_MODER2_Msk | GPIO_MODER_MODER1_Msk | GPIO_MODER_MODER0_Msk;
+    GPIOB->MODER |= GPIO_MODER_MODER7_0 | GPIO_MODER_MODER5_1 | GPIO_MODER_MODER3_1 | GPIO_MODER_MODER1_0 | GPIO_MODER_MODER0_0;
     GPIOF->MODER |= GPIO_MODER_MODER0_0;
-    GPIOA->AFR[1]|= 0x10000000;
+    GPIOA->AFR[1]|= 0x10000010;
     GPIOA->AFR[0]|= 0x11000000;
 }
 
@@ -128,7 +144,7 @@ void spiInit(void){
 
 uint16_t adcR[4];
 uint16_t adcF[4];
-int32_t filterK[] = {512, 512, 512, 2048};
+int32_t filterK[] = {1024, 1024, 512, 2048};
 
 void adcInit(){
     if ((ADC1->CR & ADC_CR_ADEN) != 0) ADC1->CR |= ADC_CR_ADDIS;

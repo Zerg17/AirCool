@@ -35,19 +35,19 @@ void logicProc(){
 
 
     if(!(coreStatus.status & CRITICAL_ERR)){
-        if(sec==10 && sec_d==0){
+        if(sec==305 && sec_d==0){
             coreStatus.mode = testMode;
             rpm1S=coreSetting.minFanSpeedRPM1;
         }
 
-        if(sec==30 && sec_d==0){
+        if(sec==365 && sec_d==0){
             if(abs((int16_t)rpm1S-(int16_t)rpm1)>200){
                 coreStatus.errFun1 = 1;
             }
             rpm1S=coreSetting.fanSpeedRPM1;
         }
 
-        if(sec==60 && sec_d==0){
+        if(sec==425 && sec_d==0){
             if(abs((int16_t)rpm1S-(int16_t)rpm1)>200){
                coreStatus.errFun1 = 1;
             }
@@ -56,44 +56,43 @@ void logicProc(){
             coreStatus.heatOn = 1;
         }
 
-        if(sec==90 && sec_d==0){
+        if(sec==545 && sec_d==0){
             HEAT_OFF;
             coreStatus.heatOn = 0;
             COOL_ON;
             coreStatus.coolOn = 1;
         }
 
-        if(sec==150 && sec_d==0){
+        if(sec==725 && sec_d==0){
             COOL_OFF;
             coreStatus.coolOn = 0;
             coreStatus.mode = waitMode;
         }
 
-        if(sec>160){
+        if(sec>725){
+
+            rpm1S=coreStatus.mode == coolMode?coreSetting.fanSpeedRPM1:coreSetting.minFanSpeedRPM1;
+
             if(coreStatus.mode==waitMode && term1>coreSetting.tCool){
                 COOL_ON;
-                rpm1S=coreSetting.fanSpeedRPM1;
                 coreStatus.mode = coolMode;
                 coreStatus.coolOn = 1;
             }
 
             if(coreStatus.mode==coolMode && term1<coreSetting.tCool-coreSetting.deltaTCool){
                 COOL_OFF;
-                rpm1S=coreSetting.minFanSpeedRPM1;
                 coreStatus.mode = waitMode;
                 coreStatus.coolOn = 0;
             }
 
             if(coreStatus.mode==waitMode && term1<coreSetting.tHeat){
                 HEAT_ON;
-                rpm1S=coreSetting.fanSpeedRPM1;
                 coreStatus.mode = heatMode;
                 coreStatus.heatOn = 1;
             }
 
-            if(coreStatus.mode==heatMode && term1<coreSetting.tHeat-coreSetting.deltaTHeat){
+            if(coreStatus.mode==heatMode && term1>coreSetting.tHeat+coreSetting.deltaTHeat){
                 HEAT_OFF;
-                rpm1S=coreSetting.minFanSpeedRPM1;
                 coreStatus.mode = waitMode;
                 coreStatus.heatOn = 0;
             }
@@ -102,6 +101,7 @@ void logicProc(){
         ALARM_OFF;
     }else{
         //xfprintf(uartWrite, "err %02X\n", coreStatus.status);
+        coreStatus.mode = waitMode;
         rpm1S=0;
         rpm2S=0;
         HEAT_OFF;

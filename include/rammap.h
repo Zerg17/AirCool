@@ -164,8 +164,8 @@ typedef struct {
     };
     int16_t temp1;              // Температура на внешнем датчике
     int16_t temp2;              // Температура на внутреннем датчике
-    uint16_t rmpFan1;           // Обороты 1 вентилятора
-    uint16_t rmpFan2;           // Обороты 2 вентилятора
+    uint16_t rpmFan1;           // Обороты 1 вентилятора
+    uint16_t rpmFan2;           // Обороты 2 вентилятора
     uint16_t voltage;           // Напряжение системы
     uint16_t current;           // Ток системы
 } coreStatus_t;
