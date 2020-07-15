@@ -22,8 +22,6 @@ extern volatile uint16_t rpm1, rpm2;
 extern int32_t term1, term2;
 extern uint16_t voltage, current;
 
-extern volatile uint8_t msgResponse, msgResponseType;
-
 extern volatile uint32_t tick;
 extern volatile uint32_t sec_d;
 extern volatile uint32_t sec;

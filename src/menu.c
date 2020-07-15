@@ -185,7 +185,7 @@ void drawErr(uint8_t err){
     ssd1306_WriteString(bufC, Font_7x9, White);
     ssd1306_SetCursor(INDENT, 20);
     switch(err){
-        case 0:  ssd1306_WriteString("-", Font_7x9, White); break;
+        case 0:  ssd1306_WriteString("Кондиционер выключен", Font_7x9, White); break;
         case 1:  ssd1306_WriteString("Аварийный сигнал внутреннего вентилятора", Font_7x9, White); break;
         case 2:  ssd1306_WriteString("Аварийный сигнал 2 внутреннего вентилятора", Font_7x9, White); break;
         case 3:  ssd1306_WriteString("Аварийный сигнал внешнего вентилятора", Font_7x9, White); break;

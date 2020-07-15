@@ -2,7 +2,9 @@
 #include "rammap.h"
 #include "system.h"
 #include "tool.h"
+#include "uart.h"
 
+volatile uint8_t msgResponse=0, msgResponseType=0;
 uint16_t rpm1S=0, rpm2S=0;
 
 void logicProc(){
@@ -38,6 +40,10 @@ void logicProc(){
         if(sec==305 && sec_d==0){
             coreStatus.mode = testMode;
             rpm1S=coreSetting.minFanSpeedRPM1;
+            COOL_OFF;
+            HEAT_OFF;
+            coreStatus.coolOn = 0;
+            coreStatus.heatOn = 0;
         }
 
         if(sec==365 && sec_d==0){
@@ -109,13 +115,36 @@ void logicProc(){
         ALARM_ON;
     }
 
-    // if(tick%50 == 0){
-    //     //xfprintf(uartWrite, "%d %d %u %u %u %X\n", term1, term2, voltage, current, sec, err);
-    //     xfprintf(uartWrite, "%u\n", current);
-    // }
 
-    // if(msgFlug){
-    //     if(msgType<3 && msgLen==0)msgResponse=1;
-    //     msgFlug=0;
-    // }
+    if(msgFlug){
+        msgFlug=0;
+        msgResponseType=msgType;
+        switch(msgType){
+            case 0:
+                msgResponse=1;
+                break;
+            case 1:
+                msgResponse=1;
+                break;
+            case 2:
+                msgResponse=1;
+                break;
+            case 0x72:
+                msgResponse=1;
+                sec=300;
+                break;
+            case 0x70:
+                msgResponse=1;
+                coreStatus.off=1;
+                break;
+            case 0x71:
+                msgResponse=1;
+                coreStatus.off=0;
+                break;
+            case 0x7F:
+                NVIC_SystemReset();
+                break;
+        }
+        
+    }
 }

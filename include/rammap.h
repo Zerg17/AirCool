@@ -32,13 +32,13 @@
 #define calidoffsetVoltage_MIN -1000
 #define calidoffsetVoltage_MAX 1000
 
-#define alrmTmin_DEF 4500
-#define alrmTmin_MIN 3000
-#define alrmTmin_MAX 7000
+#define alrmTmax_DEF 4500
+#define alrmTmax_MIN 3000
+#define alrmTmax_MAX 7000
 
-#define alrmTmax_DEF 0
-#define alrmTmax_MIN -4000
-#define alrmTmax_MAX 2000
+#define alrmTmin_DEF 0
+#define alrmTmin_MIN -4000
+#define alrmTmin_MAX 2000
 
 #define heaterCurrentMin_DEF 20
 #define heaterCurrentMin_MIN 20
@@ -78,7 +78,7 @@
 
 #define typePin_DEF 0
 
-#define CRITICAL_ERR 0x000037F0
+#define CRITICAL_ERR 0x800037F0
 
 enum coreMode{
     waitMode,
@@ -158,7 +158,8 @@ typedef struct {
             uint32_t errTmp2:1;         // Ошибка датчика температуры 1
             uint32_t heatOn:1;          // Нагреватель включен
             uint32_t coolOn:1;          // Компрессор включен
-            uint32_t reserved:16;
+            uint32_t reserved:15;
+            uint32_t off:1;             // Кондиционер выключен
             };
         uint32_t status;
     };

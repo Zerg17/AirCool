@@ -12,8 +12,6 @@ volatile uint16_t rpm1=0, rpm2=0;
 int32_t term1, term2;
 uint16_t voltage, current;
 
-volatile uint8_t msgResponse=0, msgResponseType=0;
-
 void SysTick_Handler(void) {
     tick++;
     if(++sec_d==100){
@@ -25,10 +23,10 @@ void SysTick_Handler(void) {
     if(rpm2)rpm2--;
 
     static int32_t I1, I2;
-    I1=constrain(I1+(int16_t)rpm1S-(int16_t)rpm1, 2400*150, 7999*150);
-    I2=constrain(I2+(int16_t)rpm2S-(int16_t)rpm2, 2400*150, 7999*150);
-    TIM3->CCR1 = rpm1S?constrain(I1/150, 2400, 7999):0;
-    TIM3->CCR2 = rpm2S?constrain(I2/150, 2400, 7999):0;
+    I1=constrain(I1+(int16_t)rpm1S-(int16_t)rpm1, 2400*250, 7999*250);
+    I2=constrain(I2+(int16_t)rpm2S-(int16_t)rpm2, 2400*250, 7999*250);
+    TIM3->CCR1 = rpm1S?constrain(I1/250, 2400, 7999):0;
+    TIM3->CCR2 = rpm2S?constrain(I2/250, 2400, 7999):0;
 
     term1 = tempCalc(adcF[0])*100/65535;
     term2 = tempCalc(adcF[1])*100/65535;
@@ -47,11 +45,10 @@ void SysTick_Handler(void) {
     //     xfprintf(uartWrite, "%u %d %d %u %u %02X\n", sec, term1, term2, voltage, current, coreStatus.status);
     // }
 
-    if(tick%100==0){
-        msgResponseType=1;
-        msgResponse=1;
-
-    }
+    // if(tick%100==0){
+    //     msgResponseType=1;
+    //     msgResponse=1;
+    // }
 
     logicProc();
 }
