@@ -10,7 +10,6 @@ extern uint8_t aa;
 
 int main(void){
     sysInit();
-    uartWrite('A');
     
     xdev_out(ssd1306_Char);
 

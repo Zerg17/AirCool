@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-#define tCool_DEF 3200
+#define tCool_DEF 3500
 #define tCool_MIN 2500
 #define tCool_MAX 5500
 
@@ -174,5 +174,7 @@ typedef struct {
 extern coreInfo_t coreInfo;
 extern coreSetting_t coreSetting;
 extern coreStatus_t coreStatus;
+
+uint8_t checkSettingParam(coreSetting_t* st);
 
 #endif

@@ -52,10 +52,10 @@ void USART1_IRQHandler(void){
 
     if(USART1->ISR & USART_ISR_RXNE){
         uint8_t d = USART1->RDR;
-        if(tick-tim>100)status=0;
+        if(tick-tim>100 || msgFlug==1)status=0;
         tim=tick;
         switch(status){
-            case 0: if(d==0x55)status=1;crc=0; break;
+            case 0: if(d==0x55){status=1;crc=0;} break;
             case 1: if(d==0)status=2; else status=0; break;
             case 2: msgLen=d; count=0; status=3; break;
             case 3: msgType=d; status=4; break;
