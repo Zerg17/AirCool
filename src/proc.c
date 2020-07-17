@@ -35,9 +35,13 @@ void logicProc(){
     }
     if(countCur)countCur--;
 
+    coreStatus.alm1 = GPIOA->IDR & GPIO_IDR_5;
+    coreStatus.alm2 = GPIOA->IDR & GPIO_IDR_8;
 
-    if(!(coreStatus.status & CRITICAL_ERR)){
+
+    if(!((coreStatus.status & CRITICAL_ERR) | coreStatus.alm1 | coreStatus.alm2)){
         if(sec==305 && sec_d==0){
+            coreStatus.status = 0;
             coreStatus.mode = testMode;
             rpm1S=coreSetting.minFanSpeedRPM1;
             COOL_OFF;
@@ -127,6 +131,7 @@ void logicProc(){
                 msgResponse=1;
                 break;
             case 2:
+                msgResponseType=msgLen?0x82:2;
                 msgResponse=1;
                 break;
             case 0x72:

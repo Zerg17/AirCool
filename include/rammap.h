@@ -40,16 +40,16 @@
 #define alrmTmin_MIN -4000
 #define alrmTmin_MAX 2000
 
-#define heaterCurrentMin_DEF 20
-#define heaterCurrentMin_MIN 20
+#define heaterCurrentMin_DEF 0
+#define heaterCurrentMin_MIN 0
 #define heaterCurrentMin_MAX 300
 
 #define heaterCurrentMax_DEF 300
 #define heaterCurrentMax_MIN 100
 #define heaterCurrentMax_MAX 300
 
-#define compressorCurrentMin_DEF 20
-#define compressorCurrentMin_MIN 20
+#define compressorCurrentMin_DEF 0
+#define compressorCurrentMin_MIN 0
 #define compressorCurrentMin_MAX 100
 
 #define compressorCurrentMax_DEF 300
@@ -158,7 +158,9 @@ typedef struct {
             uint32_t errTmp2:1;         // Ошибка датчика температуры 1
             uint32_t heatOn:1;          // Нагреватель включен
             uint32_t coolOn:1;          // Компрессор включен
-            uint32_t reserved:15;
+            uint32_t alm1:1;
+            uint32_t alm2:1;
+            uint32_t reserved:13;
             uint32_t off:1;             // Кондиционер выключен
             };
         uint32_t status;
