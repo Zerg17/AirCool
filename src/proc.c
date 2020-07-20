@@ -79,7 +79,7 @@ void logicProc(){
             coreStatus.mode = waitMode;
         }
 
-        if(sec>725){
+        if(sec>785){
 
             rpm1S=coreStatus.mode == coolMode?coreSetting.fanSpeedRPM1:coreSetting.minFanSpeedRPM1;
 
@@ -150,6 +150,5 @@ void logicProc(){
                 NVIC_SystemReset();
                 break;
         }
-        
     }
 }

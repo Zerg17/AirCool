@@ -41,16 +41,9 @@ void SysTick_Handler(void) {
     coreStatus.voltage = voltage;
     coreStatus.current = current;
 
-    // if(tick%100==0){
-    //     xfprintf(uartWrite, "%u %d %d %u %u %02X\n", sec, term1, term2, voltage, current, coreStatus.status);
-    // }
-
-    // if(tick%100==0){
-    //     msgResponseType=1;
-    //     msgResponse=1;
-    // }
-
     logicProc();
+    //COOL_ON;
+    //rpm1S=2300;
 }
 
 void rccInit(){
