@@ -16,19 +16,6 @@
 #define HEAT_ON  GPIOB->BSRR = GPIO_BSRR_BS_0
 #define HEAT_OFF GPIOB->BSRR = GPIO_BSRR_BR_0
 
-extern uint8_t buff[128];
-
-extern volatile uint16_t rpm1, rpm2;
-extern int32_t term1, term2;
-extern uint16_t voltage, current;
-
-extern volatile uint32_t tick;
-extern volatile uint32_t sec_d;
-extern volatile uint32_t sec;
-
-extern uint16_t adcR[4];
-extern uint16_t adcF[4];
-
 void sysInit();
 void uartWrite(uint8_t d);
 void flashInit();

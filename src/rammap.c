@@ -1,5 +1,6 @@
 #include "rammap.h"
 #include "config.h"
+#include "flash.h"
 
 coreInfo_t coreInfo = {SN, VP, DATA};
 coreSetting_t coreSetting = {
@@ -42,8 +43,8 @@ uint8_t checkSettingParam(coreSetting_t* st){
     if(!(st->calidT2>=calidT_MIN && st->calidT2<=calidT_MAX)) return 5;
     if(!(st->calidOffsetCurrent>=calidOffsetCurrent_MIN && st->calidOffsetCurrent<=calidOffsetCurrent_MAX)) return 13;
     if(!(st->calidoffsetVoltage>=calidoffsetVoltage_MIN && st->calidoffsetVoltage<=calidoffsetVoltage_MAX)) return 15;
-    if(!(st->alrmTmin>=alrmTmin_MIN && st->alrmTmin<=alrmTmin_MAX)) return 17;
-    if(!(st->alrmTmax>=alrmTmax_MIN && st->alrmTmax<=alrmTmax_MAX)) return 18;
+    if(!(st->alrmT1min>=alrmTmin_MIN && st->alrmT1min<=alrmTmin_MAX)) return 17;
+    if(!(st->alrmT1max>=alrmTmax_MIN && st->alrmT1max<=alrmTmax_MAX)) return 18;
     if(!(st->heaterCurrentMin>=heaterCurrentMin_MIN && st->heaterCurrentMin<=heaterCurrentMin_MAX)) return 19;
     if(!(st->heaterCurrentMax>=heaterCurrentMax_MIN && st->heaterCurrentMax<=heaterCurrentMax_MAX)) return 20;
     if(!(st->compressorCurrentMax>=compressorCurrentMax_MIN && st->compressorCurrentMax<=compressorCurrentMax_MAX)) return 22;
@@ -58,4 +59,23 @@ uint8_t checkSettingParam(coreSetting_t* st){
     if(!(st->numPulsesFun2!=0)) return 30;
     if(!(((st->tHeat+st->deltaTHeat)+100)<(st->tCool-st->deltaTCool))) return 0x80;
     return 0;
+}
+
+void loadFlashSetting(){
+    if(*(uint16_t*)(0x08007C00) == 0x55AA  && *(uint16_t*)(0x08007FFC) == 0x55AA && *(uint16_t*)(0x08007C02) == *(uint16_t*)(0x08007FFE))
+        for(uint8_t i=0; i<(sizeof(coreSetting_t)+1)/2; i++) ((uint16_t*)&coreSetting)[i] = ((uint16_t*)(0x08007C04))[i];
+}
+
+void saveFlashSetting(coreSetting_t* st){
+    for(uint8_t i=0; i<(sizeof(coreSetting_t)+1)/2; i++)
+        ((uint16_t*)&coreSetting)[i] = ((uint16_t*)(st))[i];
+    flashInit();
+    flashSectorClear(0x08007C00);
+    uint16_t tmp = *(uint16_t*)(0x08007C02)+1;
+    flashWrite(0x08007C00, 0x55AA);
+    flashWrite(0x08007C02, tmp);
+    for(uint8_t i=0; i<(sizeof(coreSetting_t)+1)/2; i++)
+        flashWrite(0x08007C04+i*2, ((uint16_t*)&coreSetting)[i]);
+    flashWrite(0x08007FFC, 0x55AA);
+    flashWrite(0x08007FFE, tmp);
 }

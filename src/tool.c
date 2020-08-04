@@ -37,3 +37,9 @@ int32_t logfix (uint32_t x){
 int32_t tempCalc(int16_t a){
     return (0xF6E00000000)/(logfix(((int64_t)a<<32)/((0x1000-a)<<16))+0xD3F94)-0x1112666;
 }
+
+uint16_t strl(char *str){
+	uint16_t l=0;
+    while (*str++ != 0)l++;
+	return l;
+}

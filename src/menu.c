@@ -2,6 +2,7 @@
 #include "ssd1306.h"
 #include "system.h"
 #include "rammap.h"
+#include "tool.h"
 
 const uint8_t numS[] = {15, 9, 15, 15, 18, 15, 15, 15, 18, 15, 3, 3, 10};
 
@@ -203,46 +204,30 @@ void drawErr(uint8_t err){
         case 15: ssd1306_WriteString("Аварийный сигнал превышения тока нагревателя", Font_7x9, White); break;
     } 
 }
-void drawMain(){
+void drawMain(char* str){
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
     ssd1306_DrawLine(70, 16, 70, 63, 1);
     ssd1306_DrawLine(70, 42, 127, 42, 1);
     ssd1306_DrawLine(97, 42, 97, 63, 1);
     
-    switch(coreStatus.mode){
-        case waitMode:
-            ssd1306_SetCursor(64-sizeof(WAIT_MSG)/2*7,4);
-            ssd1306_WriteString(WAIT_MSG, Font_7x9, White);
-            break;
-        case coolMode:
-            ssd1306_SetCursor(64-sizeof(COOLING_MSG)/2*7,4);
-            ssd1306_WriteString(COOLING_MSG, Font_7x9, White);
-            break;
-        case heatMode:
-            ssd1306_SetCursor(64-sizeof(HEAT_MSG)/2*7,4);
-            ssd1306_WriteString(HEAT_MSG, Font_7x9, White);
-            break;
-        case testMode:
-            ssd1306_SetCursor(64-sizeof(TESTING_MSG)/2*7,4);
-            ssd1306_WriteString(TESTING_MSG, Font_7x9, White);
-            break;
-    }
+    ssd1306_SetCursor(64-strl(str)/2*7,4);
+    ssd1306_WriteString(str, Font_7x9, White);
 
     ssd1306_SetCursor(75, 26);
-    xprintf("%04dRPM", rpm1);
+    xprintf("%04dRPM", coreStatus.rpmFan1);
 
     ssd1306_SetCursor(75, 49);
-    xprintf("%uV", voltage/100%100);
+    xprintf("%uV", coreStatus.voltage/100%100);
 
     ssd1306_SetCursor(102, 49);
-    xprintf("%u", current/100);
+    xprintf("%u", coreStatus.current/100);
     ssd1306_SetCursor(107, 49);
     xprintf(".");
     ssd1306_SetCursor(112, 49);
-    xprintf("%uA", current%100/10);
+    xprintf("%uA", coreStatus.current%100/10);
 
-    printTemp(term1);
+    printTemp(coreStatus.temp1);
 }
 
 void drawDebug(uint32_t a1, uint32_t a2, uint32_t a3, int32_t a4, int32_t a5, int32_t a6){

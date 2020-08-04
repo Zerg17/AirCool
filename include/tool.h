@@ -11,5 +11,6 @@
 
 int32_t tempCalc(int16_t a);
 void printTemp(int32_t t);
+uint16_t strl(char *str);
 
 #endif
