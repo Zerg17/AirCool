@@ -262,8 +262,7 @@ void updateMenu(){
             if(coreStatus.errLowVoltage == 1){drawErr(16, "Аварийный сигнал низкого напряжения");break;}
             if(coreStatus.errT1max == 1){drawErr(10, "Аварийный сигнал высокой температуры");break;}
             if(coreStatus.errT1min == 1){drawErr(11, "Аварийный сигнал низкой температуры");break;}
-            if(coreStatus.errT2max == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
-            if(coreStatus.errT2min == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
+            if(coreStatus.errT2max == 1 || coreStatus.errT2min == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
             if(coreStatus.errTmp1 == 1){drawErr(18, "Аварийный сигнал датчика температуры 1");break;}
             if(coreStatus.errTmp2 == 1){drawErr(19, "Аварийный сигнал датчика температуры 2");break;}
         break;

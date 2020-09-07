@@ -1,15 +1,12 @@
 #include "system.h"
 #include "sysControl.h"
-#include "ssd1306.h"
 #include "rammap.h"
 #include "menu.h"
-#include "uart.h"
-#include "flash.h"
-
-extern uint8_t msgType;
-extern uint8_t aa;
+#include "ssd1306.h"
+#include "xprintf.h"
 
 int main(void){
+    xdev_out(ssd1306_Char);
     sysInit();
     loadFlashSetting();
     while(sec<5);
