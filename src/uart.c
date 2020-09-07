@@ -122,7 +122,7 @@ void logicUart(){
             break;
         case 0x71:
             sendPack(0xF1, 0, 0);
-            coreStatus.mode=perStartMode;
+            coreStatus.mode=befStartMode;
             break;
         case 0x7F:
             NVIC_SystemReset();

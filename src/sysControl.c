@@ -1,6 +1,5 @@
 #include "sysControl.h"
 #include "system.h"
-#include "proc.h"
 #include "rammap.h"
 #include "tool.h"
 
@@ -17,18 +16,66 @@ uint16_t voltage, current;
 uint16_t adcR[4];
 uint16_t adcF[4];
 
+uint32_t timWaitNext=0;
+
+void logicProc(){
+    static uint8_t curStat=0xFF;
+    static uint8_t testComplite=0;
+
+    if(curStat != coreStatus.mode){
+        switch(coreStatus.mode){
+            case waitStartMode: timWaitNext=1*60*100+5*100; break;
+            case testFun1Mode: timWaitNext=2*60*100; break;
+            case testFun2Mode: timWaitNext=2*60*100; break;
+            case testHeatMode: timWaitNext=2*60*100; break;
+            case testCoolMode: timWaitNext=3*60*100; break;
+            case befStartMode: timWaitNext=30*100; break;
+            case afterErrMode: 
+                if(testComplite){
+                    coreStatus.mode = befStartMode;
+                    timWaitNext=30*100;
+                }else{
+                    coreStatus.mode = waitStartMode;
+                    timWaitNext=5*60*100+5*100;
+                }
+                break;
+        }
+        curStat = coreStatus.mode;
+    }
+
+    if(timWaitNext) timWaitNext--;
+    else{
+        switch(coreStatus.mode){
+            case waitStartMode: coreStatus.mode=testFun1Mode; break;
+            case testFun1Mode: coreStatus.mode=testHeatMode; break;
+            case testHeatMode: coreStatus.mode=testCoolMode; break;
+            case testCoolMode: coreStatus.mode=befStartMode; break;
+            case befStartMode: coreStatus.mode=waitMode; break;
+        }
+    }
+
+    if(coreStatus.mode == waitMode){
+        if(term1>coreSetting.tCool)coreStatus.mode=coolMode;
+        if(term1<coreSetting.tHeat)coreStatus.mode=heatMode;
+    }
+
+    if(coreStatus.mode == coolMode){
+        if(term1<(coreSetting.tCool-coreSetting.deltaTCool))coreStatus.mode=waitMode;
+    }
+
+    if(coreStatus.mode == heatMode){
+        if(term1>(coreSetting.tCool+coreSetting.deltaTCool))coreStatus.mode=waitMode;
+    }
+}
+
 void SysTick_Handler(void) {
+
     tick++;
     if(++sec_d==100){
         sec_d=0;
         sec++;
     }
-    //if(tick == 0xFFFFFFFF) NVIC_SystemReset();
-
-    /////////////////////////////////////////////////////////////////
-
-    static uint32_t coolTim=0;
-    if(coolTim)coolTim--;
+    //if(tick == 0xFFFFFFFF) NVIC_SystemReset();    
 
     /////////////////////////////////////////////////////////////////
 
@@ -64,28 +111,29 @@ void SysTick_Handler(void) {
 
     /////////////////////////////////////////////////////////////////
 
-    if(coreStatus.mode == waitStartMode || coreStatus.mode == waitMode || coreStatus.mode == perStartMode || coreStatus.mode == offMode || coreStatus.mode == errMode){
-        rpm1S=0;
-        rpm2S=0;
-        HEAT_OFF;
-        COOL_OFF;
-        coreStatus.coolOn=0;
-        coreStatus.heatOn=0;
-        coolTim=60*100;
+    if(    coreStatus.errFun1            || coreStatus.errFun2 
+        || coreStatus.errHighCurrentCool || coreStatus.errLowCurrentCool
+        || coreStatus.errHighCurrentHeat || coreStatus.errLowCurrentHeat
+        || coreStatus.errHighVoltage     || coreStatus.errLowVoltage
+        || coreStatus.errT1max           || coreStatus.errT1min 
+        || coreStatus.errT2max           || coreStatus.errT2min
+        || coreStatus.errTmp1            || coreStatus.errTmp2){
+        coreStatus.mode=errMode;
+    }else{
+        if(coreStatus.mode==errMode)coreStatus.mode=afterErrMode;
     }
 
     /////////////////////////////////////////////////////////////////
 
     static uint32_t errFun1Count=0;
-    if(coreStatus.mode == coolMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode){
+    if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
         rpm1S=coreSetting.fanSpeedRPM1;
 
         if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
         else if(errFun1Count) errFun1Count--;
 
         if(errFun1Count>30*100){
-            errFun1Count=0;
-            coreStatus.mode=errMode;
+            errFun1Count=0;   
             coreStatus.errFun1=1;
         }
     }else{
@@ -94,8 +142,10 @@ void SysTick_Handler(void) {
 
     /////////////////////////////////////////////////////////////////
     
+    static uint32_t coolTim=0;
+    if(coolTim)coolTim--;
     static uint32_t errCoolCount=0;
-    if(coolTim==0 && coreStatus.errHighCurrentCool==0 && coreStatus.errHighCurrentCool==0 && (coreStatus.mode == coolMode || coreStatus.mode == testCoolMode)){
+    if(coolTim==0 && coreStatus.errLowCurrentCool==0 && coreStatus.errHighCurrentCool==0 && (coreStatus.mode == coolMode || coreStatus.mode == testCoolMode)){
         COOL_ON;
         coreStatus.coolOn=1;
 
@@ -109,12 +159,16 @@ void SysTick_Handler(void) {
             coreStatus.errHighCurrentCool=current>coreSetting.compressorCurrentMax;
             coreStatus.errLowCurrentCool=current<coreSetting.compressorCurrentMin;
         }
+    }else{
+        COOL_OFF;
+        coreStatus.coolOn=0;
+        if(coolTim==0)coolTim=60*100;
     }
 
     /////////////////////////////////////////////////////////////////
 
     static uint32_t errHeatCount=0;
-    if(coreStatus.errHighCurrentHeat==0 && coreStatus.errLowCurrentHeat==0 && (coreStatus.mode == heatMode || coreStatus.mode == testHeatMode)){
+    if(coreStatus.errLowCurrentHeat==0 && coreStatus.errHighCurrentHeat==0 && (coreStatus.mode == heatMode || coreStatus.mode == testHeatMode)){
         HEAT_ON;
         coreStatus.heatOn=1;
 
@@ -128,6 +182,9 @@ void SysTick_Handler(void) {
             coreStatus.errHighCurrentHeat=current>coreSetting.heaterCurrentMax;
             coreStatus.errLowCurrentHeat=current<coreSetting.heaterCurrentMin;
         }
+    }else{
+        HEAT_OFF;
+        coreStatus.heatOn=0;
     }
 }
 

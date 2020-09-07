@@ -16,3 +16,6 @@ extern uint16_t voltage, current;
 
 extern uint16_t adcR[4];
 extern uint16_t adcF[4];
+
+
+extern uint32_t timWaitNext;

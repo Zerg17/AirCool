@@ -4,7 +4,6 @@
 #include "rammap.h"
 #include "menu.h"
 #include "uart.h"
-#include "proc.h"
 #include "flash.h"
 
 extern uint8_t msgType;
@@ -27,7 +26,7 @@ int main(void){
             case testFun2Mode: drawMain("Тест 2 вентилятора"); break;
             case testHeatMode: drawMain("Тест нагревателя"); break;
             case testCoolMode: drawMain("Тест компрессора"); break;
-            case perStartMode: drawMain("Ожидание запуска"); break;
+            case befStartMode: drawMain("Ожидание запуска"); break;
             case manCtrMode: drawMain("Ручной режим!!!"); break;
             case offMode: drawMain("Выключен"); break;
             case errMode: 

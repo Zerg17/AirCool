@@ -78,8 +78,6 @@
 
 #define typePin_DEF 0
 
-#define CRITICAL_ERR 0x800037F0
-
 enum coreMode{
     waitStartMode,
     waitMode,
@@ -89,8 +87,9 @@ enum coreMode{
     testFun2Mode,
     testHeatMode,
     testCoolMode,
-    perStartMode,
+    befStartMode,
     manCtrMode,
+    afterErrMode=0xD,
     offMode=0xE,
     errMode=0xF
 };
