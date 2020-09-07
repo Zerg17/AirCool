@@ -17,6 +17,8 @@ coreSetting_t coreSetting = {
     0,
     alrmTmin_DEF,
     alrmTmax_DEF,
+    alrmTmin_DEF,
+    alrmTmax_DEF,
     heaterCurrentMin_DEF,
     heaterCurrentMax_DEF,
     compressorCurrentMin_DEF,

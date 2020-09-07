@@ -78,7 +78,7 @@ void SysTick_Handler(void) {
 
     static uint32_t errFun1Count=0;
     if(coreStatus.mode == coolMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode){
-        rpm1=coreSetting.fanSpeedRPM1;
+        rpm1S=coreSetting.fanSpeedRPM1;
 
         if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
         else if(errFun1Count) errFun1Count--;
@@ -88,6 +88,8 @@ void SysTick_Handler(void) {
             coreStatus.mode=errMode;
             coreStatus.errFun1=1;
         }
+    }else{
+        rpm1S=0;
     }
 
     /////////////////////////////////////////////////////////////////
