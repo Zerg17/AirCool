@@ -27,12 +27,12 @@ void gpioInit(){
     // PA2  - VOLTAGE       - ADC2
     // PA1  - TEMP2         - ADC1
     // PA0  - TEMP1         - ADC0
-    // PB7  - ALARM         - GPIO_OUT
+    // PB7  - ALARM_RELAY   - GPIO_OUT
     // PB5  - SSD1306_SDA   - SPI
     // PB4  - THO_IN        - EXTI4_15
     // PB3  - SSD1306_SCK   - SPI
-    // PB1  - COOL          - GPIO_OUT
-    // PB0  - HEAT          - GPIO_OUT
+    // PB1  - COOL_RELAY    - GPIO_OUT
+    // PB0  - HEAT_RELAY    - GPIO_OUT
     // PF0  - SSD1306_RESET - GPIO_OUT
 
     // 0 - GPIO_OUT
@@ -48,6 +48,7 @@ void gpioInit(){
 
 /////////////////////////////////////////////////////////////////////
 
+// Настройка внешних перрываний для измерения скорости вентиляторов
 void extiInit(){
     SYSCFG->EXTICR[1] |= SYSCFG_EXTICR2_EXTI4_PB;
     EXTI->FTSR = (1<<4) | (1<<12);  // Включаем триггер внешнего прерывания по фронту
@@ -57,6 +58,7 @@ void extiInit(){
 
 /////////////////////////////////////////////////////////////////////
 
+// Настройка SPI для дисплея ssd1306
 void spiInit(void){
     SPI1->CR1 = SPI_CR1_SSM | SPI_CR1_SSI | SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE | SPI_CR1_MSTR;
     SPI1->CR1 |= SPI_CR1_SPE;
@@ -64,6 +66,7 @@ void spiInit(void){
 
 /////////////////////////////////////////////////////////////////////
 
+// Настройка ADC для работы с 3-0 каналами по внешнему триггеру 3 таймера
 void adcInit(){
     // Сброс ADC если был запущен
     if ((ADC1->CR & ADC_CR_ADEN) != 0) ADC1->CR |= ADC_CR_ADDIS;
@@ -81,12 +84,14 @@ void adcInit(){
 
     ADC1->SMPR = 0b111;  // Время зарядки емкости ADC 239.5 тактов
 
-    ADC1->CFGR1
-        = ADC_CFGR1_DMACFG  // Циклический режим работы с ДМА
-        | ADC_CFGR1_DMAEN   // Разрешение работы с ДМА
+    ADC1->CFGR1 
+        = ADC_CFGR1_DISCEN  // Прерывистый режим
         | ADC_CFGR1_EXTEN_0 // Работа по фронту триггера
-        | ADC_CFGR1_EXTSEL_1 | ADC_CFGR1_EXTSEL_0; // Выбираем 3 таймер в качестве триггера
-    ADC1->CHSELR = 0b1111;  // Выбираем каналы для преобразования 0-3
+        | ADC_CFGR1_EXTSEL_1 | ADC_CFGR1_EXTSEL_0 // Выбираем 3 таймер в качестве триггера
+        | ADC_CFGR1_DMACFG  // Циклический режим работы с ДМА
+        | ADC_CFGR1_DMAEN;   // Разрешение работы с ДМА  
+        
+    ADC1->CHSELR = 0b1111;  // Выбираем каналы для преобразования 3-0
 
     DMA1_Channel1->CNDTR = 4;
     DMA1_Channel1->CPAR = (uint32_t)(&(ADC1->DR));
@@ -101,6 +106,7 @@ void adcInit(){
 
 /////////////////////////////////////////////////////////////////////
 
+// Настройка TIM3 для управление вентиляторами и генерации триггера для ADC
 void tim3Init(){
     TIM3->CCMR1 = (0x06 << TIM_CCMR1_OC1M_Pos) | (0x06 << TIM_CCMR1_OC2M_Pos);
     TIM3->CCER = TIM_CCER_CC1E | TIM_CCER_CC2E;
@@ -111,6 +117,7 @@ void tim3Init(){
     TIM3->CR1 |= TIM_CR1_CEN;
 }
 
+// Настройка TIM14 для расчета скорости вращения вентиляторов
 void tim14Init(){
     TIM14->PSC = 24;
     TIM14->CR1 |= TIM_CR1_CEN;

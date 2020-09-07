@@ -85,7 +85,6 @@ void USART1_IRQHandler(void){
     if(USART1->ISR & USART_ISR_NE){     //  START bit Noise detection flag
         USART1->ICR = USART_ICR_NCF;
     }
-
 }
 
 void logicUart(){

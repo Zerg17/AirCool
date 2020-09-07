@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 #include "fonts.h"
-#include "system.h"
 
 #define DC_SET GPIOA->BSRR = GPIO_BSRR_BS_11
 #define DC_RES GPIOA->BRR = GPIO_BRR_BR_11
