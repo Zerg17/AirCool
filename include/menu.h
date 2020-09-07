@@ -3,14 +3,6 @@
 
 #include "stdint.h"
 
-#define TESTING_MSG "Тестирование"
-#define WAIT_MSG "Ожидание"
-#define COOLING_MSG "Охлаждение"
-#define HEAT_MSG "Нагрев"
-
-void drawWait(uint16_t t);
-void drawErr(uint8_t err);
-void drawMain(char* str);
-void drawDebug(uint32_t a1, uint32_t a2, uint32_t a3, int32_t a4, int32_t a5, int32_t a6);
+void updateMenu();
 
 #endif

@@ -3,6 +3,7 @@
 #include "system.h"
 #include "rammap.h"
 #include "tool.h"
+#include "sysControl.h"
 
 const uint8_t numS[] = {15, 9, 15, 15, 18, 15, 15, 15, 18, 15, 3, 3, 10};
 
@@ -166,8 +167,8 @@ void printTemp(int32_t t){
 
 void drawWait(uint16_t t){
     uint8_t xp=63-(numS[t/600%10]+numS[t/60%10]+9);
-    ssd1306_SetCursor(64-sizeof(WAIT_MSG)/2*7,4);
-    ssd1306_WriteString(WAIT_MSG, Font_7x9, White);
+    ssd1306_SetCursor(64-sizeof("Ожидание")/2*7,4);
+    ssd1306_WriteString("Ожидание", Font_7x9, White);
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
     xp+=numPrint(t/600%10, xp)+2;
@@ -177,7 +178,7 @@ void drawWait(uint16_t t){
     numPrint(t%10, xp);
 }
 
-void drawErr(uint8_t err){
+void drawErr(uint8_t err, char* str){
     char bufC[40];
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
@@ -185,24 +186,25 @@ void drawErr(uint8_t err){
     ssd1306_SetCursor(32,4);
     ssd1306_WriteString(bufC, Font_7x9, White);
     ssd1306_SetCursor(INDENT, 20);
-    switch(err){
-        case 0:  ssd1306_WriteString("Кондиционер выключен", Font_7x9, White); break;
-        case 1:  ssd1306_WriteString("Аварийный сигнал внутреннего вентилятора", Font_7x9, White); break;
-        case 2:  ssd1306_WriteString("Аварийный сигнал 2 внутреннего вентилятора", Font_7x9, White); break;
-        case 3:  ssd1306_WriteString("Аварийный сигнал внешнего вентилятора", Font_7x9, White); break;
-        case 4:  ssd1306_WriteString("Аварийный сигнал 2 внешнего вентилятора", Font_7x9, White); break;
-        case 5:  ssd1306_WriteString("Аварийный сигнал слабого тока компрессора", Font_7x9, White); break;
-        case 6:  ssd1306_WriteString("Аварийный сигнал превышения тока компрессора", Font_7x9, White); break;
-        case 7:  ssd1306_WriteString("Аварийный сигнал датчика внутренней температуры", Font_7x9, White); break;
-        case 8:  ssd1306_WriteString("-", Font_7x9, White); break;
-        case 9:  ssd1306_WriteString("Аварийный сигнал датчика температуры конденсатора", Font_7x9, White); break;
-        case 10: ssd1306_WriteString("Аварийный сигнал высокой температуры", Font_7x9, White); break;
-        case 11: ssd1306_WriteString("Аварийный сигнал низкой температуры", Font_7x9, White); break;
-        case 12: ssd1306_WriteString("-", Font_7x9, White); break;
-        case 13: ssd1306_WriteString("Аварийный сигнал панели управления", Font_7x9, White); break;
-        case 14: ssd1306_WriteString("Аварийный сигнал низкого тока нагревателя", Font_7x9, White); break;
-        case 15: ssd1306_WriteString("Аварийный сигнал превышения тока нагревателя", Font_7x9, White); break;
-    } 
+    ssd1306_WriteString(str, Font_7x9, White);
+    // switch(err){
+    //     case 0:  ssd1306_WriteString("Кондиционер выключен", Font_7x9, White); break;
+    //     case 1:  ssd1306_WriteString("Аварийный сигнал внутреннего вентилятора", Font_7x9, White); break;
+    //     case 2:  ssd1306_WriteString("Аварийный сигнал 2 внутреннего вентилятора", Font_7x9, White); break;
+    //     case 3:  ssd1306_WriteString("Аварийный сигнал внешнего вентилятора", Font_7x9, White); break;
+    //     case 4:  ssd1306_WriteString("Аварийный сигнал 2 внешнего вентилятора", Font_7x9, White); break;
+    //     case 5:  ssd1306_WriteString("Аварийный сигнал слабого тока компрессора", Font_7x9, White); break;
+    //     case 6:  ssd1306_WriteString("Аварийный сигнал превышения тока компрессора", Font_7x9, White); break;
+    //     case 7:  ssd1306_WriteString("Аварийный сигнал датчика внутренней температуры", Font_7x9, White); break;
+    //     case 8:  ssd1306_WriteString("-", Font_7x9, White); break;
+    //     case 9:  ssd1306_WriteString("Аварийный сигнал датчика температуры конденсатора", Font_7x9, White); break;
+    //     case 10: ssd1306_WriteString("Аварийный сигнал высокой температуры", Font_7x9, White); break;
+    //     case 11: ssd1306_WriteString("Аварийный сигнал низкой температуры", Font_7x9, White); break;
+    //     case 12: ssd1306_WriteString("-", Font_7x9, White); break;
+    //     case 13: ssd1306_WriteString("Аварийный сигнал панели управления", Font_7x9, White); break;
+    //     case 14: ssd1306_WriteString("Аварийный сигнал низкого тока нагревателя", Font_7x9, White); break;
+    //     case 15: ssd1306_WriteString("Аварийный сигнал превышения тока нагревателя", Font_7x9, White); break;
+    // } 
 }
 void drawMain(char* str){
     ssd1306_DrawRect(0, 0, 127, 63, 1);
@@ -233,4 +235,38 @@ void drawMain(char* str){
 void drawDebug(uint32_t a1, uint32_t a2, uint32_t a3, int32_t a4, int32_t a5, int32_t a6){
     ssd1306_SetCursor(INDENT, 0);
     xprintf("A1=%d\nA2=%d\nA3=%d\nA4=%u\nA5=%d\nA6=%u\n", a1, a2, a3, a4, a5, a6);
+}
+
+void updateMenu(){
+    ssd1306_Fill(0);
+    switch(coreStatus.mode){
+        case waitStartMode: drawWait(timWaitNext/100); break;
+        case waitMode: drawMain("Ожидание"); break;
+        case coolMode: drawMain("Охлаждение"); break;
+        case heatMode: drawMain("Нагрев"); break;
+        case testFun1Mode: drawMain("Тест 1 вентилятора"); break;
+        case testFun2Mode: drawMain("Тест 2 вентилятора"); break;
+        case testHeatMode: drawMain("Тест нагревателя"); break;
+        case testCoolMode: drawMain("Тест компрессора"); break;
+        case befStartMode: drawMain("Ожидание запуска"); break;
+        case manCtrMode: drawMain("Ручной режим!!!"); break;
+        case offMode: drawMain("Выключен"); break;
+        case errMode: 
+            if(coreStatus.errFun1 == 1){drawErr(1, "Аварийный сигнал внутреннего вентилятора");break;}
+            if(coreStatus.errFun2 == 1){drawErr(3, "Аварийный сигнал внешнего вентилятора");break;}
+            if(coreStatus.errHighCurrentCool == 1){drawErr(6, "Аварийный сигнал превышения тока компрессора");break;}
+            if(coreStatus.errLowCurrentCool == 1){drawErr(5, "Аварийный сигнал слабого тока компрессора");break;}
+            if(coreStatus.errHighCurrentHeat == 1){drawErr(15, "Аварийный сигнал превышения тока нагревателя");break;}
+            if(coreStatus.errLowCurrentHeat == 1){drawErr(14, "Аварийный сигнал низкого тока нагревателя");break;}
+            if(coreStatus.errHighVoltage == 1){drawErr(17, "Аварийный сигнал превышения напряжения");break;}
+            if(coreStatus.errLowVoltage == 1){drawErr(16, "Аварийный сигнал низкого напряжения");break;}
+            if(coreStatus.errT1max == 1){drawErr(10, "Аварийный сигнал высокой температуры");break;}
+            if(coreStatus.errT1min == 1){drawErr(11, "Аварийный сигнал низкой температуры");break;}
+            if(coreStatus.errT2max == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
+            if(coreStatus.errT2min == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
+            if(coreStatus.errTmp1 == 1){drawErr(18, "Аварийный сигнал датчика температуры 1");break;}
+            if(coreStatus.errTmp2 == 1){drawErr(19, "Аварийный сигнал датчика температуры 2");break;}
+        break;
+    }
+    ssd1306_UpdateScreen();
 }
