@@ -53,6 +53,7 @@ void extiInit(){
     SYSCFG->EXTICR[1] |= SYSCFG_EXTICR2_EXTI4_PB;
     EXTI->FTSR = (1<<4) | (1<<12);  // Включаем триггер внешнего прерывания по фронту
     EXTI->IMR =  (1<<4) | (1<<12);
+    NVIC_SetPriority(EXTI4_15_IRQn, 1);
     NVIC_EnableIRQ(EXTI4_15_IRQn);
 }
 
@@ -126,6 +127,7 @@ void tim14Init(){
 /////////////////////////////////////////////////////////////////////
 
 void sysInit(){
+    xdev_out(ssd1306_Char);
     rccInit();
     gpioInit();
     uartInit();
@@ -135,5 +137,6 @@ void sysInit(){
     tim3Init();
     tim14Init();
     ssd1306_Init();
+    NVIC_SetPriority(SysTick_IRQn, 3);
     SysTick_Config(F_CPU/100);
 }

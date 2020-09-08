@@ -49,7 +49,7 @@ void logicProc(){
             case waitStartMode: coreStatus.mode=testFun1Mode; break;
             case testFun1Mode: coreStatus.mode=testHeatMode; break;
             case testHeatMode: coreStatus.mode=testCoolMode; break;
-            case testCoolMode: coreStatus.mode=befStartMode; break;
+            case testCoolMode: coreStatus.mode=befStartMode; testComplite=1; break;
             case befStartMode: coreStatus.mode=waitMode; break;
         }
     }
