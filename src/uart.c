@@ -16,9 +16,9 @@ void uartWrite(uint8_t d){
 }
 
 void uartInit(){
-    USART1->BRR = (F_CPU+BOAD/2)/BOAD;
+    //USART1->BRR = (F_CPU+BOAD/2)/BOAD;
     USART1->CR1 = USART_CR1_TE | USART_CR1_RE;
-    //USART1->CR2 = USART_CR2_ABREN | USART_CR2_ABRMODE_Msk;
+    USART1->CR2 = USART_CR2_ABREN | USART_CR2_ABRMODE_Msk;
     //USART1->CR2 = USART_CR2_STOP_1;
     USART1->CR1 |= USART_CR1_UE;
     while(!(USART1->ISR & (USART_ISR_TEACK | USART_ISR_REACK)));
@@ -78,20 +78,25 @@ void USART1_IRQHandler(void){
 
     if(USART1->ISR & USART_ISR_FE){     // Framing error
         USART1->ICR = USART_ICR_FECF;
-        USART1->TDR=0xAA;
     }
     if(USART1->ISR & USART_ISR_ORE){    // Overrun error    
         USART1->ICR = USART_ICR_ORECF;
-        USART1->TDR=0xBB;
     }
     if(USART1->ISR & USART_ISR_NE){     //  START bit Noise detection flag
         USART1->ICR = USART_ICR_NCF;
-        USART1->TDR=0XCC;
     }
 }
 
 void logicUart(){
+    static uint32_t tim;
+    if(sec-tim>20){
+        tim=sec;
+        USART1->CR1 &= ~USART_CR1_UE;
+        USART1->BRR = 0;
+        USART1->CR1 |= USART_CR1_UE;
+    }
     if(msgAvl){
+        tim=sec;
         switch(msgType){
             case 0:
                 sendPack(0, (uint8_t*)&coreInfo, sizeof(coreInfo_t));

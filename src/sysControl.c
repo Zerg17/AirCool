@@ -24,7 +24,7 @@ void logicProc(){
 
     if(curStat != coreStatus.mode){
         switch(coreStatus.mode){
-            case waitStartMode: timWaitNext=1*60*100+5*100; break;
+            case waitStartMode: timWaitNext=5*60*100+5*100; break;
             case testFun1Mode: timWaitNext=2*60*100; break;
             case testFun2Mode: timWaitNext=2*60*100; break;
             case testHeatMode: timWaitNext=2*60*100; break;
@@ -36,7 +36,7 @@ void logicProc(){
                     timWaitNext=30*100;
                 }else{
                     coreStatus.mode = waitStartMode;
-                    timWaitNext=5*60*100+5*100;
+                    timWaitNext=5*60*100;
                 }
                 break;
         }
