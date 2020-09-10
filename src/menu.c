@@ -256,6 +256,7 @@ void updateMenu(){
             if(coreStatus.errFun2 == 1){drawErr(3, "Аварийный сигнал внешнего вентилятора");break;}
             if(coreStatus.errHighCurrentCool == 1){drawErr(6, "Аварийный сигнал превышения тока компрессора");break;}
             if(coreStatus.errLowCurrentCool == 1){drawErr(5, "Аварийный сигнал слабого тока компрессора");break;}
+            if(coreStatus.alm1 == 1 || coreStatus.alm2 == 1){drawErr(13, "Аварийный сигнал панели управления");break;}
             if(coreStatus.errHighCurrentHeat == 1){drawErr(15, "Аварийный сигнал превышения тока нагревателя");break;}
             if(coreStatus.errLowCurrentHeat == 1){drawErr(14, "Аварийный сигнал низкого тока нагревателя");break;}
             if(coreStatus.errHighVoltage == 1){drawErr(17, "Аварийный сигнал превышения напряжения");break;}
@@ -265,6 +266,9 @@ void updateMenu(){
             if(coreStatus.errT2max == 1 || coreStatus.errT2min == 1){drawErr(7, "Аварийный сигнал датчика внутренней температуры");break;}
             if(coreStatus.errTmp1 == 1){drawErr(18, "Аварийный сигнал датчика температуры 1");break;}
             if(coreStatus.errTmp2 == 1){drawErr(19, "Аварийный сигнал датчика температуры 2");break;}
+            if(coreStatus.alm1 == 1){drawErr(18, "Аварийный сигнал датчика температуры 1");break;}
+            if(coreStatus.alm1 == 1){drawErr(19, "Аварийный сигнал датчика температуры 2");break;}
+            drawErr(0, "");
         break;
     }
     ssd1306_UpdateScreen();
