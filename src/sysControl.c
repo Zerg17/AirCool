@@ -75,7 +75,7 @@ void SysTick_Handler(void) {
         sec_d=0;
         sec++;
     }
-    //if(tick == 0xFFFFFFFF) NVIC_SystemReset();    
+    if(tick == 0xFFFFFFFF) NVIC_SystemReset();    
 
     /////////////////////////////////////////////////////////////////
 
@@ -111,16 +111,29 @@ void SysTick_Handler(void) {
 
     /////////////////////////////////////////////////////////////////
 
+    coreStatus.errHighVoltage = voltage>coreSetting.alrmVmax;
+    coreStatus.errLowVoltage = voltage<coreSetting.alrmVmin;
+    coreStatus.errT1max = term1>coreSetting.alrmT1max;
+    coreStatus.errT1min = term1<coreSetting.alrmT1min;
+    coreStatus.errT2max = term2>coreSetting.alrmT2max;
+    coreStatus.errT2min = term2<coreSetting.alrmT2min;
+    coreStatus.errTmp1 = adcF[0]<30;
+    coreStatus.errTmp2 = adcF[1]<30;
+    coreStatus.alm1 = ALM1_GET;
+    coreStatus.alm1 = ALM2_GET;
+
+    /////////////////////////////////////////////////////////////////
+
     if(    coreStatus.errFun1            || coreStatus.errFun2 
         || coreStatus.errHighCurrentCool || coreStatus.errLowCurrentCool
         || coreStatus.errHighCurrentHeat || coreStatus.errLowCurrentHeat
-        || coreStatus.errHighVoltage     || coreStatus.errLowVoltage
-        || coreStatus.errT1max           || coreStatus.errT1min 
-        || coreStatus.errT2max           || coreStatus.errT2min
-        || coreStatus.errTmp1            || coreStatus.errTmp2){
+        || coreStatus.errTmp1            || coreStatus.errTmp2
+        || coreStatus.alm1               || coreStatus.alm2){
         coreStatus.mode=errMode;
+        ALARM_ON;
     }else{
         if(coreStatus.mode==errMode)coreStatus.mode=afterErrMode;
+        ALARM_OFF;
     }
 
     /////////////////////////////////////////////////////////////////
