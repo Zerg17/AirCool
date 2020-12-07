@@ -25,6 +25,7 @@ void logicProc(){
     if(curStat != coreStatus.mode){
         switch(coreStatus.mode){
             case waitStartMode: timWaitNext=5*60*100+5*100; break;
+            case watiTestMode: timWaitNext=5*100; break;
             case testFun1Mode: timWaitNext=2*60*100; break;
             case testFun2Mode: timWaitNext=2*60*100; break;
             case testHeatMode: timWaitNext=2*60*100; break;
@@ -46,7 +47,8 @@ void logicProc(){
     if(timWaitNext) timWaitNext--;
     else{
         switch(coreStatus.mode){
-            case waitStartMode: coreStatus.mode=testFun1Mode; break;
+            case waitStartMode: coreStatus.mode=watiTestMode; break;
+            case watiTestMode: coreStatus.mode=testFun1Mode; break;
             case testFun1Mode: coreStatus.mode=testHeatMode; break;
             case testHeatMode: coreStatus.mode=testCoolMode; break;
             case testCoolMode: coreStatus.mode=befStartMode; testComplite=1; break;
@@ -117,14 +119,15 @@ void SysTick_Handler(void) {
     coreStatus.errT1min = term1<coreSetting.alrmT1min;
     coreStatus.errT2max = term2>coreSetting.alrmT2max;
     coreStatus.errT2min = term2<coreSetting.alrmT2min;
-    coreStatus.errTmp1 = adcF[0]<30;
-    coreStatus.errTmp2 = adcF[1]<30;
-    coreStatus.alm1 = ALM1_GET;
-    coreStatus.alm1 = ALM2_GET;
+    coreStatus.errTmp1 = adcF[0]>4076;
+    coreStatus.errTmp2 = adcF[1]>4076;
+    coreStatus.alm1 = !ALM1_GET;
+    coreStatus.alm2 = !ALM2_GET;
 
     /////////////////////////////////////////////////////////////////
 
-    if(    coreStatus.errFun1            || coreStatus.errFun2 
+    if(    coreStatus.errHighVoltage     || coreStatus.errLowVoltage 
+        || coreStatus.errFun1            || coreStatus.errFun2 
         || coreStatus.errHighCurrentCool || coreStatus.errLowCurrentCool
         || coreStatus.errHighCurrentHeat || coreStatus.errLowCurrentHeat
         || coreStatus.errTmp1            || coreStatus.errTmp2
@@ -232,7 +235,7 @@ void EXTI4_15_IRQHandler(){
 
 void DMA1_Channel1_IRQHandler(void){
     static const int32_t filterK[] = {1024, 1024, 512, 2048};
-    static uint32_t acc[4] = {2048*512, 2048*512, 2800*512};
+    static uint32_t acc[4] = {4095*1024, 4095*1024, 2800*512};
     if(DMA1->ISR & DMA_ISR_TCIF1){
         DMA1->IFCR=DMA_IFCR_CTCIF1;
         for(uint8_t i=0; i<4; i++){

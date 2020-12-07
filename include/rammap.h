@@ -88,6 +88,7 @@ enum coreMode{
     testHeatMode,
     testCoolMode,
     befStartMode,
+    watiTestMode,
     manCtrMode,
     afterErrMode=0xD,
     offMode=0xE,
