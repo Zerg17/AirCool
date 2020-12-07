@@ -49,7 +49,8 @@ void logicProc(){
         switch(coreStatus.mode){
             case waitStartMode: coreStatus.mode=watiTestMode; break;
             case watiTestMode: coreStatus.mode=testFun1Mode; break;
-            case testFun1Mode: coreStatus.mode=testHeatMode; break;
+            case testFun1Mode: coreStatus.mode=testFun2Mode; break;
+            case testFun2Mode: coreStatus.mode=testHeatMode; break;
             case testHeatMode: coreStatus.mode=testCoolMode; break;
             case testCoolMode: coreStatus.mode=befStartMode; testComplite=1; break;
             case befStartMode: coreStatus.mode=waitMode; break;
@@ -112,6 +113,7 @@ void SysTick_Handler(void) {
     logicProc();
 
     /////////////////////////////////////////////////////////////////
+    // Обработка аварий
 
     coreStatus.errHighVoltage = voltage>coreSetting.alrmVmax;
     coreStatus.errLowVoltage = voltage<coreSetting.alrmVmin;
@@ -125,6 +127,7 @@ void SysTick_Handler(void) {
     coreStatus.alm2 = !ALM2_GET;
 
     /////////////////////////////////////////////////////////////////
+    // Реакция на аварии
 
     if(    coreStatus.errHighVoltage     || coreStatus.errLowVoltage 
         || coreStatus.errFun1            || coreStatus.errFun2 
@@ -140,10 +143,16 @@ void SysTick_Handler(void) {
     }
 
     /////////////////////////////////////////////////////////////////
+    // Обработка 1 вентилятора
 
     static uint32_t errFun1Count=0;
-    if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
-        rpm1S=coreSetting.fanSpeedRPM1;
+    if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode || coreStatus.mode == waitMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
+        
+        if(coreStatus.mode == coolMode) rpm1S=coreSetting.fanSpeedRPM1;
+        if(coreStatus.mode == waitMode) rpm1S=coreSetting.fanSpeedRPM1;
+        if(coreStatus.mode == testFun1Mode) rpm1S=coreSetting.minFanSpeedRPM1;
+        if(coreStatus.mode == testCoolMode) rpm1S=coreSetting.fanSpeedRPM1;
+        
 
         if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
         else if(errFun1Count) errFun1Count--;
@@ -157,6 +166,31 @@ void SysTick_Handler(void) {
     }
 
     /////////////////////////////////////////////////////////////////
+    // Обработка 2 вентилятора
+
+    static uint32_t errFun2Count=0;
+    if(coreStatus.errFun2==0 && (coreStatus.mode == coolMode || coreStatus.mode == heatMode || coreStatus.mode == waitMode || coreStatus.mode == testFun2Mode || coreStatus.mode == testCoolMode)){
+
+        if(coreStatus.mode == coolMode) rpm2S=coreSetting.fanSpeedRPM2;
+        if(coreStatus.mode == heatMode) rpm2S=coreSetting.minFanSpeedRPM2;
+        if(coreStatus.mode == waitMode) rpm2S=coreSetting.minFanSpeedRPM2;
+        if(coreStatus.mode == testFun1Mode) rpm2S=coreSetting.minFanSpeedRPM2;
+        if(coreStatus.mode == testCoolMode) rpm2S=coreSetting.fanSpeedRPM2;
+
+        if(abs((int16_t)rpm2S-(int16_t)rpm2)>200)errFun2Count++;
+        else if(errFun2Count) errFun2Count--;
+
+        if(errFun2Count>30*100){
+            errFun2Count=0;   
+            coreStatus.errFun2=1;
+        }
+    }else{
+        rpm2S=0;
+    }
+
+
+    /////////////////////////////////////////////////////////////////
+    // Обработка компрессора
     
     static uint32_t coolTim=0;
     if(coolTim)coolTim--;
@@ -182,6 +216,7 @@ void SysTick_Handler(void) {
     }
 
     /////////////////////////////////////////////////////////////////
+    // Обработка нагревателя
 
     static uint32_t errHeatCount=0;
     if(coreStatus.errLowCurrentHeat==0 && coreStatus.errHighCurrentHeat==0 && (coreStatus.mode == heatMode || coreStatus.mode == testHeatMode)){

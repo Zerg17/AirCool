@@ -165,7 +165,7 @@ typedef struct {
     union{
         struct{
             uint32_t mode:4;                // Режим работы
-            uint32_t opMode:2;              // Режим работы
+            uint32_t opMode:2;              // Режим управления
             uint32_t coolOn:1;              // Компрессор включен
             uint32_t heatOn:1;              // Нагреватель включен
             uint32_t manCtrCool:1;          // Ручное управление компрессором
@@ -191,7 +191,6 @@ typedef struct {
 
             uint32_t debug:4;
             uint32_t reserved:2;
-            
         };
         uint32_t status;
     };
