@@ -217,7 +217,7 @@ void drawMain(char* str){
     ssd1306_WriteString(str, Font_7x9, White);
 
     ssd1306_SetCursor(75, 26);
-    xprintf("%04dRPM", coreStatus.rpmFan1);
+    xprintf("%04dRPM", (coreStatus.mode == testFun1Mode)?coreStatus.rpmFan1:coreStatus.rpmFan2);
 
     ssd1306_SetCursor(75, 49);
     xprintf("%uV", coreStatus.voltage/100%100);
@@ -241,6 +241,7 @@ void updateMenu(){
     ssd1306_Fill(0);
     switch(coreStatus.mode){
         case waitStartMode: drawWait(timWaitNext/100); break;
+        case watiTestMode: drawMain("Ожидание запуска"); break;
         case waitMode: drawMain("Ожидание"); break;
         case coolMode: drawMain("Охлаждение"); break;
         case heatMode: drawMain("Нагрев"); break;

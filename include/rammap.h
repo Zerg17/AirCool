@@ -64,12 +64,12 @@
 #define alrmVmax_MIN 5000
 #define alrmVmax_MAX 6300
 
-#define minFanSpeedRPM_DEF 1000
-#define minFanSpeedRPM_MIN 500
-#define minFanSpeedRPM_MAX 2000
+#define minFanSpeedRPM_DEF 2000
+#define minFanSpeedRPM_MIN 1500
+#define minFanSpeedRPM_MAX 3000
 
-#define fanSpeedRPM_DEF 2300
-#define fanSpeedRPM_MIN 500
+#define fanSpeedRPM_DEF 2800
+#define fanSpeedRPM_MIN 1500
 #define fanSpeedRPM_MAX 3000
 
 #define numPulsesFun_DEF 2

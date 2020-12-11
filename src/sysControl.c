@@ -25,6 +25,7 @@ void logicProc(){
     if(curStat != coreStatus.mode){
         switch(coreStatus.mode){
             case waitStartMode: timWaitNext=5*60*100+5*100; break;
+            //case waitStartMode: timWaitNext=5*100; break;
             case watiTestMode: timWaitNext=5*100; break;
             case testFun1Mode: timWaitNext=2*60*100; break;
             case testFun2Mode: timWaitNext=2*60*100; break;
@@ -38,6 +39,7 @@ void logicProc(){
                 }else{
                     coreStatus.mode = waitStartMode;
                     timWaitNext=5*60*100;
+                    //timWaitNext=100;
                 }
                 break;
         }
@@ -145,15 +147,15 @@ void SysTick_Handler(void) {
     /////////////////////////////////////////////////////////////////
     // Обработка 1 вентилятора
 
+    static uint32_t heatTim=0;
+    if(coreStatus.mode == heatMode) heatTim=tick;
     static uint32_t errFun1Count=0;
-    if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode || coreStatus.mode == waitMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
+    if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode ||  coreStatus.mode == waitMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
         
-        if(coreStatus.mode == coolMode) rpm1S=coreSetting.fanSpeedRPM1;
-        if(coreStatus.mode == waitMode) rpm1S=coreSetting.fanSpeedRPM1;
-        if(coreStatus.mode == testFun1Mode) rpm1S=coreSetting.minFanSpeedRPM1;
-        if(coreStatus.mode == testCoolMode) rpm1S=coreSetting.fanSpeedRPM1;
+        if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm1S=coreSetting.fanSpeedRPM1;
+        else rpm1S=coreSetting.minFanSpeedRPM1;
+        if((10*60*100+heatTim)>tick)rpm1S=0;
         
-
         if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
         else if(errFun1Count) errFun1Count--;
 
@@ -169,13 +171,10 @@ void SysTick_Handler(void) {
     // Обработка 2 вентилятора
 
     static uint32_t errFun2Count=0;
-    if(coreStatus.errFun2==0 && (coreStatus.mode == coolMode || coreStatus.mode == heatMode || coreStatus.mode == waitMode || coreStatus.mode == testFun2Mode || coreStatus.mode == testCoolMode)){
+    if(coreStatus.errFun2==0 && (coreStatus.mode == coolMode || coreStatus.mode == heatMode ||  coreStatus.mode == waitMode || coreStatus.mode == testFun2Mode || coreStatus.mode == testCoolMode || coreStatus.mode == testHeatMode)){
 
-        if(coreStatus.mode == coolMode) rpm2S=coreSetting.fanSpeedRPM2;
-        if(coreStatus.mode == heatMode) rpm2S=coreSetting.minFanSpeedRPM2;
-        if(coreStatus.mode == waitMode) rpm2S=coreSetting.minFanSpeedRPM2;
-        if(coreStatus.mode == testFun1Mode) rpm2S=coreSetting.minFanSpeedRPM2;
-        if(coreStatus.mode == testCoolMode) rpm2S=coreSetting.fanSpeedRPM2;
+        if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm2S=coreSetting.fanSpeedRPM2;
+        else rpm2S=coreSetting.minFanSpeedRPM2;
 
         if(abs((int16_t)rpm2S-(int16_t)rpm2)>200)errFun2Count++;
         else if(errFun2Count) errFun2Count--;
@@ -202,7 +201,7 @@ void SysTick_Handler(void) {
         if(current<coreSetting.compressorCurrentMin || current>coreSetting.compressorCurrentMax)errCoolCount++;
         else if(errCoolCount) errCoolCount--;
 
-        if(errCoolCount>5*100){
+        if(coreStatus.mode == testCoolMode && errCoolCount>5*100){
             errCoolCount=0;
             COOL_OFF;
             coreStatus.coolOn=0;
@@ -211,8 +210,9 @@ void SysTick_Handler(void) {
         }
     }else{
         COOL_OFF;
+        if(coolTim==0 && coreStatus.coolOn) coolTim=60*100;
         coreStatus.coolOn=0;
-        if(coolTim==0)coolTim=60*100;
+        
     }
 
     /////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ void SysTick_Handler(void) {
         if(current<coreSetting.heaterCurrentMin || current>coreSetting.heaterCurrentMax)errHeatCount++;
         else if(errHeatCount) errHeatCount--;
 
-        if(errHeatCount>20*100){
+        if(coreStatus.mode == testHeatMode && errHeatCount>20*100){
             errHeatCount=0;
             HEAT_OFF;
             coreStatus.heatOn=0;
@@ -270,7 +270,7 @@ void EXTI4_15_IRQHandler(){
 
 void DMA1_Channel1_IRQHandler(void){
     static const int32_t filterK[] = {1024, 1024, 512, 2048};
-    static uint32_t acc[4] = {4095*1024, 4095*1024, 2800*512};
+    static uint32_t acc[4] = {2048*1024, 2048*1024, 2800*512};
     if(DMA1->ISR & DMA_ISR_TCIF1){
         DMA1->IFCR=DMA_IFCR_CTCIF1;
         for(uint8_t i=0; i<4; i++){
