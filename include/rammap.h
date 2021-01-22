@@ -42,11 +42,11 @@
 
 #define heaterCurrentMin_DEF 0
 #define heaterCurrentMin_MIN 0
-#define heaterCurrentMin_MAX 300
+#define heaterCurrentMin_MAX 2000
 
 #define heaterCurrentMax_DEF 300
 #define heaterCurrentMax_MIN 100
-#define heaterCurrentMax_MAX 300
+#define heaterCurrentMax_MAX 2000
 
 #define compressorCurrentMin_DEF 0
 #define compressorCurrentMin_MIN 0

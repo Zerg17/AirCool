@@ -253,8 +253,8 @@ void updateMenu(){
         case manCtrMode: drawMain("Ручной режим!!!"); break;
         case offMode: drawMain("Выключен"); break;
         case errMode: 
-            if(coreStatus.errFun1 == 1){drawErr(1, "Аварийный сигнал внутреннего вентилятора");break;}
-            if(coreStatus.errFun2 == 1){drawErr(3, "Аварийный сигнал внешнего вентилятора");break;}
+            if(coreStatus.errFun2 == 1){drawErr(1, "Аварийный сигнал внутреннего вентилятора");break;}
+            if(coreStatus.errFun1 == 1){drawErr(3, "Аварийный сигнал внешнего вентилятора");break;}
             if(coreStatus.errHighCurrentCool == 1){drawErr(6, "Аварийный сигнал превышения тока компрессора");break;}
             if(coreStatus.errLowCurrentCool == 1){drawErr(5, "Аварийный сигнал слабого тока компрессора");break;}
             if(coreStatus.alm1 == 1 || coreStatus.alm2 == 1){drawErr(13, "Аварийный сигнал панели управления");break;}

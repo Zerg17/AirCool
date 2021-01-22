@@ -147,14 +147,16 @@ void SysTick_Handler(void) {
     /////////////////////////////////////////////////////////////////
     // Обработка 1 вентилятора
 
-    static uint32_t heatTim=0;
-    if(coreStatus.mode == heatMode) heatTim=tick;
+    //static uint32_t heatTim=0;
+    //if(coreStatus.mode == heatMode) heatTim=tick;
     static uint32_t errFun1Count=0;
     if(coreStatus.errFun1==0 && (coreStatus.mode == coolMode ||  coreStatus.mode == waitMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
         
         if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm1S=coreSetting.fanSpeedRPM1;
         else rpm1S=coreSetting.minFanSpeedRPM1;
-        if((10*60*100+heatTim)>tick)rpm1S=0;
+        //if((10*60*100+heatTim)>tick)rpm1S=0;
+        //if(sec%140<20)rpm1S=0;
+        //if(coreStatus.mode == waitMode && term2<500) rpm1S=0;
         
         if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
         else if(errFun1Count) errFun1Count--;
