@@ -40,21 +40,21 @@
 #define alrmTmin_MIN -4000
 #define alrmTmin_MAX 2000
 
-#define heaterCurrentMin_DEF 0
+#define heaterCurrentMin_DEF 10
 #define heaterCurrentMin_MIN 0
-#define heaterCurrentMin_MAX 2000
+#define heaterCurrentMin_MAX 1000
 
 #define heaterCurrentMax_DEF 300
 #define heaterCurrentMax_MIN 100
-#define heaterCurrentMax_MAX 2000
+#define heaterCurrentMax_MAX 1000
 
-#define compressorCurrentMin_DEF 0
+#define compressorCurrentMin_DEF 10
 #define compressorCurrentMin_MIN 0
-#define compressorCurrentMin_MAX 100
+#define compressorCurrentMin_MAX 1000
 
 #define compressorCurrentMax_DEF 300
 #define compressorCurrentMax_MIN 100
-#define compressorCurrentMax_MAX 300
+#define compressorCurrentMax_MAX 1000
 
 #define alrmVmin_DEF 4000
 #define alrmVmin_MIN 4000
