@@ -69,7 +69,7 @@ void logicProc(){
     }
 
     if(coreStatus.mode == heatMode){
-        if(term1>(coreSetting.tCool+coreSetting.deltaTCool))coreStatus.mode=waitMode;
+        if(term1>(coreSetting.tHeat+coreSetting.deltaTHeat))coreStatus.mode=waitMode;
     }
 }
 
