@@ -3,6 +3,7 @@
 #define RAMMAP
 
 #include <stdint.h>
+#include "config.h"
 
 #define tCool_DEF 3500
 #define tCool_MIN 2000
@@ -64,13 +65,34 @@
 #define alrmVmax_MIN 5000
 #define alrmVmax_MAX 6300
 
-#define minFanSpeedRPM_DEF 2000
-#define minFanSpeedRPM_MIN 1500
-#define minFanSpeedRPM_MAX 3000
+#define minFanSpeedRPM1_DEF 2000
+#define minFanSpeedRPM1_MIN 1500
+#define minFanSpeedRPM1_MAX 3000
 
-#define fanSpeedRPM_DEF 2800
-#define fanSpeedRPM_MIN 1500
-#define fanSpeedRPM_MAX 3000
+#define fanSpeedRPM1_DEF 2800
+#define fanSpeedRPM1_MIN 1500
+#define fanSpeedRPM1_MAX 3000
+
+#ifdef AIR600W
+    #define minFanSpeedRPM2_DEF 0
+    #define fanSpeedRPM2_DEF 0
+#endif
+
+#ifdef AIR1500W
+    #define minFanSpeedRPM2_DEF 2000
+    #define fanSpeedRPM2_DEF 2800
+#endif
+
+#ifdef AIR3000W
+    #define minFanSpeedRPM2_DEF 2000
+    #define fanSpeedRPM2_DEF 2800
+#endif
+
+#define minFanSpeedRPM2_MIN 1500
+#define minFanSpeedRPM2_MAX 3000
+
+#define fanSpeedRPM2_MIN 1500
+#define fanSpeedRPM2_MAX 3000
 
 #define numPulsesFun_DEF 2
 
@@ -96,9 +118,9 @@ enum coreMode{
 };
 
 typedef struct{
-    uint32_t SN;
-    uint32_t VP;
-    uint32_t D;
+    uint32_t sn;
+    uint32_t vp;
+    uint32_t data;
 } coreInfo_t;
 
 typedef struct coreSetting{

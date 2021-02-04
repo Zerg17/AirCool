@@ -1,5 +1,4 @@
 #include "rammap.h"
-#include "config.h"
 #include "flash.h"
 
 coreInfo_t coreInfo = {SN, VP, DATA};
@@ -25,11 +24,11 @@ coreSetting_t coreSetting = {
     compressorCurrentMax_DEF,
     alrmVmin_DEF,
     alrmVmax_DEF,
-    minFanSpeedRPM_DEF,
-    fanSpeedRPM_DEF,
+    minFanSpeedRPM1_DEF,
+    fanSpeedRPM1_DEF,
     numPulsesFun_DEF,
-    minFanSpeedRPM_DEF,
-    fanSpeedRPM_DEF,
+    minFanSpeedRPM2_DEF,
+    fanSpeedRPM2_DEF,
     numPulsesFun_DEF,
     coolNumber_DEF,
     typePin_DEF
@@ -53,11 +52,11 @@ uint8_t checkSettingParam(coreSetting_t* st){
     if(!(st->compressorCurrentMin>=compressorCurrentMin_MIN && st->compressorCurrentMin<=compressorCurrentMin_MAX)) return 21;
     if(!(st->alrmVmin>=alrmVmin_MIN && st->alrmVmin<=alrmVmin_MAX)) return 23;
     if(!(st->alrmVmax>=alrmVmax_MIN && st->alrmVmax<=alrmVmax_MAX)) return 24;
-    if(!(st->minFanSpeedRPM1>=minFanSpeedRPM_MIN && st->minFanSpeedRPM1<=minFanSpeedRPM_MAX)) return 25;
-    if(!(st->fanSpeedRPM1>=fanSpeedRPM_MIN && st->fanSpeedRPM1<=fanSpeedRPM_MAX)) return 26;
+    if(!((st->minFanSpeedRPM1>=minFanSpeedRPM1_MIN && st->minFanSpeedRPM1<=minFanSpeedRPM1_MAX) || st->minFanSpeedRPM1 == 0)) return 25;
+    if(!((st->fanSpeedRPM1>=fanSpeedRPM1_MIN && st->fanSpeedRPM1<=fanSpeedRPM1_MAX) || st->fanSpeedRPM1 == 0)) return 26;
     if(!(st->numPulsesFun1!=0)) return 27;
-    if(!(st->minFanSpeedRPM2>=minFanSpeedRPM_MIN && st->minFanSpeedRPM2<=minFanSpeedRPM_MAX)) return 28;
-    if(!(st->fanSpeedRPM2>=fanSpeedRPM_MIN && st->fanSpeedRPM2<=fanSpeedRPM_MAX)) return 29;
+    if(!((st->minFanSpeedRPM2>=minFanSpeedRPM2_MIN && st->minFanSpeedRPM2<=minFanSpeedRPM2_MAX) || st->minFanSpeedRPM2 == 0)) return 28;
+    if(!((st->fanSpeedRPM2>=fanSpeedRPM2_MIN && st->fanSpeedRPM2<=fanSpeedRPM2_MAX) || st->fanSpeedRPM2 == 0)) return 29;
     if(!(st->numPulsesFun2!=0)) return 30;
     if(!(((st->tHeat+st->deltaTHeat)+100)<(st->tCool-st->deltaTCool))) return 0x80;
     return 0;

@@ -50,8 +50,8 @@ void logicProc(){
     else{
         switch(coreStatus.mode){
             case waitStartMode: coreStatus.mode=watiTestMode; break;
-            case watiTestMode: coreStatus.mode=testFun1Mode; break;
-            case testFun1Mode: coreStatus.mode=testFun2Mode; break;
+            case watiTestMode: coreStatus.mode=testFun1Mode; if(coreSetting.minFanSpeedRPM1 != 0) break;
+            case testFun1Mode: coreStatus.mode=testFun2Mode; if(coreSetting.minFanSpeedRPM2 != 0) break;
             case testFun2Mode: coreStatus.mode=testHeatMode; break;
             case testHeatMode: coreStatus.mode=testCoolMode; break;
             case testCoolMode: coreStatus.mode=befStartMode; testComplite=1; break;
