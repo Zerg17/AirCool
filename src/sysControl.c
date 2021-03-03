@@ -88,10 +88,10 @@ void SysTick_Handler(void) {
     if(rpm2)rpm2--;
 
     static int32_t I1, I2;
-    I1=constrain(I1+(int16_t)rpm1S-(int16_t)rpm1, 2400*250, 7999*250);
-    I2=constrain(I2+(int16_t)rpm2S-(int16_t)rpm2, 2400*250, 7999*250);
-    TIM3->CCR1 = rpm1S?constrain(I1/250, 2400, 7999):0;
-    TIM3->CCR2 = rpm2S?constrain(I2/250, 2400, 7999):0;
+    I1=constrain(I1+(int16_t)rpm1S-(int16_t)rpm1, 2400*500, 7999*500);
+    I2=constrain(I2+(int16_t)rpm2S-(int16_t)rpm2, 2400*500, 7999*500);
+    TIM3->CCR1 = rpm1S?constrain(I1/500, 2400, 7999):0;
+    TIM3->CCR2 = rpm2S?constrain(I2/500, 2400, 7999):0;
 
     /////////////////////////////////////////////////////////////////
 
@@ -158,8 +158,8 @@ void SysTick_Handler(void) {
         //if(sec%140<20)rpm1S=0;
         //if(coreStatus.mode == waitMode && term2<500) rpm1S=0;
         
-        if(abs((int16_t)rpm1S-(int16_t)rpm1)>200)errFun1Count++;
-        else if(errFun1Count) errFun1Count--;
+        //if(abs((int16_t)rpm1S-(int16_t)rpm1)>500)errFun1Count++;
+        //else if(errFun1Count) errFun1Count--;
 
         if(errFun1Count>30*100){
             errFun1Count=0;   
@@ -178,8 +178,8 @@ void SysTick_Handler(void) {
         if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm2S=coreSetting.fanSpeedRPM2;
         else rpm2S=coreSetting.minFanSpeedRPM2;
 
-        if(abs((int16_t)rpm2S-(int16_t)rpm2)>200)errFun2Count++;
-        else if(errFun2Count) errFun2Count--;
+        //if(abs((int16_t)rpm2S-(int16_t)rpm2)>500)errFun2Count++;
+        //else if(errFun2Count) errFun2Count--;
 
         if(errFun2Count>30*100){
             errFun2Count=0;   
