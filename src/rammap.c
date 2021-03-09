@@ -1,7 +1,8 @@
 #include "rammap.h"
 #include "flash.h"
 
-coreInfo_t coreInfo = {SN, VP, DATA};
+coreInfo_t coreInfo = {SN, VP, TYPE};
+
 coreSetting_t coreSetting = {
     tCool_DEF,
     tHeat_DEF,
@@ -40,8 +41,8 @@ uint8_t checkSettingParam(coreSetting_t* st){
     if(!(st->tHeat>=tHeat_MIN && st->tHeat<=tHeat_MAX)) return 2;
     if(!(st->deltaTCool>=deltaTCool_MIN && st->deltaTCool<=deltaTCool_MAX)) return 3;
     if(!(st->deltaTHeat>=deltaTHeat_MIN && st->deltaTHeat<=deltaTHeat_MAX)) return 4;
-    if(!(st->calidT1>=calidT_MIN && st->calidT1<=calidT_MAX)) return 4;
-    if(!(st->calidT2>=calidT_MIN && st->calidT2<=calidT_MAX)) return 5;
+    if(!(st->calidT1>=calidT_MIN && st->calidT1<=calidT_MAX)) return 5;
+    if(!(st->calidT2>=calidT_MIN && st->calidT2<=calidT_MAX)) return 6;
     if(!(st->calidOffsetCurrent>=calidOffsetCurrent_MIN && st->calidOffsetCurrent<=calidOffsetCurrent_MAX)) return 13;
     if(!(st->calidoffsetVoltage>=calidoffsetVoltage_MIN && st->calidoffsetVoltage<=calidoffsetVoltage_MAX)) return 15;
     if(!(st->alrmT1min>=alrmTmin_MIN && st->alrmT1min<=alrmTmin_MAX)) return 17;
@@ -71,8 +72,8 @@ void saveFlashSetting(coreSetting_t* st){
     for(uint8_t i=0; i<(sizeof(coreSetting_t)+1)/2; i++)
         ((uint16_t*)&coreSetting)[i] = ((uint16_t*)(st))[i];
     flashInit();
-    flashSectorClear(0x08007C00);
     uint16_t tmp = *(uint16_t*)(0x08007C02)+1;
+    flashSectorClear(0x08007C00);
     flashWrite(0x08007C00, 0x55AA);
     flashWrite(0x08007C02, tmp);
     for(uint8_t i=0; i<(sizeof(coreSetting_t)+1)/2; i++)

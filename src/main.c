@@ -4,14 +4,12 @@
 #include "menu.h"
 #include "uart.h"
 
-int main(void){
-    
+int main(void){ 
     sysInit();
     loadFlashSetting();
-    while(sec<5);
 
     while(1){
-        updateMenu();
+        if(sec>5)updateMenu();
         logicUart();
     }
 }

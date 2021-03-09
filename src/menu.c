@@ -5,8 +5,6 @@
 #include "tool.h"
 #include "sysControl.h"
 
-const uint8_t numS[] = {15, 9, 15, 15, 18, 15, 15, 15, 18, 15, 3, 3, 10};
-
 const uint8_t num0[] = {
     0xE0, 0xF8, 0xFC, 0x3C, 0x1E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 
     0x1E, 0x3C, 0xFC, 0xF8, 0xE0, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 
@@ -116,31 +114,17 @@ const uint8_t minus[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-uint8_t numPrint(uint8_t n, uint8_t x){
-    const uint8_t *b;
+const uint8_t numS[] = {15, 9, 15, 15, 18, 15, 15, 15, 18, 15, 3, 3, 10};                                   // Ширина символов
+const uint8_t* numA[] = {num0, num1, num2, num3, num4, num5, num6, num7, num8, num9, dot, dotdot, minus};   // Указатели на массивы символов
+
+uint8_t numPrint(uint8_t n, uint8_t x){ // Вывод символов в виде изображения 4 строки в высоту
     uint8_t w = numS[n];
-    switch(n){
-        case 0: b=num0; break;
-        case 1: b=num1; break;
-        case 2: b=num2; break;
-        case 3: b=num3; break;
-        case 4: b=num4; break;
-        case 5: b=num5; break;
-        case 6: b=num6; break;
-        case 7: b=num7; break;
-        case 8: b=num8; break;
-        case 9: b=num9; break;
-        case 10: b=dot; break;
-        case 11: b=dotdot; break;
-        case 12: b=minus; break;
-        default: b=minus;
-    }
     for(uint8_t i=0; i<w*4; i++)
-        SSD1306_Buffer[i%w+(i/w*128)+128*3+x]=b[i];
+        SSD1306_Buffer[i%w+(i/w*128)+128*3+x]=numA[n][i];
     return w;
 }
 
-void printTemp(int32_t t){
+void printTemp(int32_t t){  // Вывод температуры
     uint8_t xp;
     uint8_t m=0;
     if(t<0){
@@ -165,7 +149,7 @@ void printTemp(int32_t t){
     }
 }
 
-void drawWait(uint16_t t){
+void drawWait(uint16_t t){  // Вывод таймера ожидания
     uint8_t xp=63-(numS[t/600%10]+numS[t/60%10]+9);
     ssd1306_SetCursor(64-sizeof("Ожидание")/2*7,4);
     ssd1306_WriteString("Ожидание", Font_7x9, White);
@@ -178,8 +162,8 @@ void drawWait(uint16_t t){
     numPrint(t%10, xp);
 }
 
-void drawErr(uint8_t err, char* str){
-    char bufC[40];
+void drawErr(uint8_t err, char* str){   // Вывод сообщения об ошибки
+    char bufC[12];
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
     xsprintf(bufC, "Ошибка:E%u", err);
@@ -187,26 +171,9 @@ void drawErr(uint8_t err, char* str){
     ssd1306_WriteString(bufC, Font_7x9, White);
     ssd1306_SetCursor(INDENT, 20);
     ssd1306_WriteString(str, Font_7x9, White);
-    // switch(err){
-    //     case 0:  ssd1306_WriteString("Кондиционер выключен", Font_7x9, White); break;
-    //     case 1:  ssd1306_WriteString("Аварийный сигнал внутреннего вентилятора", Font_7x9, White); break;
-    //     case 2:  ssd1306_WriteString("Аварийный сигнал 2 внутреннего вентилятора", Font_7x9, White); break;
-    //     case 3:  ssd1306_WriteString("Аварийный сигнал внешнего вентилятора", Font_7x9, White); break;
-    //     case 4:  ssd1306_WriteString("Аварийный сигнал 2 внешнего вентилятора", Font_7x9, White); break;
-    //     case 5:  ssd1306_WriteString("Аварийный сигнал слабого тока компрессора", Font_7x9, White); break;
-    //     case 6:  ssd1306_WriteString("Аварийный сигнал превышения тока компрессора", Font_7x9, White); break;
-    //     case 7:  ssd1306_WriteString("Аварийный сигнал датчика внутренней температуры", Font_7x9, White); break;
-    //     case 8:  ssd1306_WriteString("-", Font_7x9, White); break;
-    //     case 9:  ssd1306_WriteString("Аварийный сигнал датчика температуры конденсатора", Font_7x9, White); break;
-    //     case 10: ssd1306_WriteString("Аварийный сигнал высокой температуры", Font_7x9, White); break;
-    //     case 11: ssd1306_WriteString("Аварийный сигнал низкой температуры", Font_7x9, White); break;
-    //     case 12: ssd1306_WriteString("-", Font_7x9, White); break;
-    //     case 13: ssd1306_WriteString("Аварийный сигнал панели управления", Font_7x9, White); break;
-    //     case 14: ssd1306_WriteString("Аварийный сигнал низкого тока нагревателя", Font_7x9, White); break;
-    //     case 15: ssd1306_WriteString("Аварийный сигнал превышения тока нагревателя", Font_7x9, White); break;
-    // } 
 }
-void drawMain(char* str){
+
+void drawMain(char* str){   // Вывод главного экрана
     ssd1306_DrawRect(0, 0, 127, 63, 1);
     ssd1306_DrawLine(0, 16, 127, 16, 1);
     ssd1306_DrawLine(70, 16, 70, 63, 1);
@@ -232,12 +199,7 @@ void drawMain(char* str){
     printTemp(coreStatus.temp1);
 }
 
-void drawDebug(uint32_t a1, uint32_t a2, uint32_t a3, int32_t a4, int32_t a5, int32_t a6){
-    ssd1306_SetCursor(INDENT, 0);
-    xprintf("A1=%d\nA2=%d\nA3=%d\nA4=%u\nA5=%d\nA6=%u\n", a1, a2, a3, a4, a5, a6);
-}
-
-void updateMenu(){
+void updateMenu(){  // Обновления меню экрана
     ssd1306_Fill(0);
     switch(coreStatus.mode){
         case waitStartMode: drawWait(timWaitNext/100); break;

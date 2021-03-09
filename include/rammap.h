@@ -73,21 +73,6 @@
 #define fanSpeedRPM1_MIN 1500
 #define fanSpeedRPM1_MAX 3000
 
-#ifdef AIR600W
-    #define minFanSpeedRPM2_DEF 0
-    #define fanSpeedRPM2_DEF 0
-#endif
-
-#ifdef AIR1500W
-    #define minFanSpeedRPM2_DEF 2000
-    #define fanSpeedRPM2_DEF 2800
-#endif
-
-#ifdef AIR3000W
-    #define minFanSpeedRPM2_DEF 2000
-    #define fanSpeedRPM2_DEF 2800
-#endif
-
 #define minFanSpeedRPM2_MIN 1500
 #define minFanSpeedRPM2_MAX 3000
 
@@ -120,7 +105,7 @@ enum coreMode{
 typedef struct{
     uint32_t sn;
     uint32_t vp;
-    uint32_t data;
+    uint32_t type;
 } coreInfo_t;
 
 typedef struct coreSetting{
