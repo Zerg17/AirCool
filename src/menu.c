@@ -184,7 +184,8 @@ void drawMain(char* str){   // Вывод главного экрана
     ssd1306_WriteString(str, Font_7x9, White);
 
     ssd1306_SetCursor(75, 26);
-    xprintf("%04dRPM", (coreStatus.mode == testFun1Mode)?coreStatus.rpmFan1:coreStatus.rpmFan2);
+    uint16_t rpmMax = max(coreStatus.rpmFan1, coreStatus.rpmFan2);
+    xprintf("%04dRPM", rpmMax);
 
     ssd1306_SetCursor(75, 49);
     xprintf("%uV", coreStatus.voltage/100%100);
