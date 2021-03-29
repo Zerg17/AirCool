@@ -7,7 +7,7 @@
 uint8_t msgType = 0;
 uint8_t msgLen = 0;
 volatile uint8_t msgAvl = 0;
-uint8_t dataMsg[255];
+uint8_t dataMsg[259];
 void logicUart();
 
 void uartWrite(uint8_t d){
@@ -22,8 +22,11 @@ void uartInit(){
     USART1->CR1 |= USART_CR1_UE;
     while(!(USART1->ISR & (USART_ISR_TEACK | USART_ISR_REACK)));
     USART1->CR1 |= USART_CR1_RXNEIE;
-    USART1->CR3 = USART_CR3_EIE;
+    USART1->CR3 = USART_CR3_EIE | USART_CR3_DMAT;
     NVIC_EnableIRQ(USART1_IRQn);
+    DMA1_Channel2->CPAR = (uint32_t) (&(USART1->TDR));
+    DMA1_Channel2->CMAR = (uint32_t)dataMsg;
+    DMA1_Channel2->CCR = DMA_CCR_MINC | DMA_CCR_DIR;
 }
 
 uint16_t crc;
@@ -34,16 +37,20 @@ void crcf(uint8_t d){
 }
 
 void sendPack(uint8_t type, uint8_t* data, uint8_t len){
-    crc=0x0F;
-    uartWrite(0x55);
-    uartWrite(0x00);
-    uartWrite(len);crcf(len);
-    uartWrite(type);crcf(type);
+    crc=0;
+    dataMsg[0]=0x55;crcf(0x55);
+    dataMsg[1]=type;crcf(type);
+    dataMsg[2]=len;crcf(len);
     for(uint8_t i=0; i<len; i++){
-        uartWrite(data[i]);
+        dataMsg[i+3] = data[i];
         crcf(data[i]);
     }
-    uartWrite(crc);
+    dataMsg[len+3]=crc;
+
+    while(DMA1_Channel2->CNDTR) continue;
+    DMA1_Channel2->CCR &=~DMA_CCR_EN;
+    DMA1_Channel2->CNDTR = len+4;
+    DMA1_Channel2->CCR |= DMA_CCR_EN;
 }
 
 void USART1_IRQHandler(void){
@@ -58,18 +65,14 @@ void USART1_IRQHandler(void){
         tim=tick;
         switch(status){
             case 0: if(d==0x55){status=1;crc=0;} break;
-            case 1: if(d==0)status=2; else status=0; break;
+            case 1: msgType=d; status=2; break;
             case 2: msgLen=d; count=0; status=3; break;
-            case 3: msgType=d; status=4; break;
-            case 4: 
-                if(count!=msgLen){
-                    dataMsg[count++]=d;
-                    break;
+            case 3: 
+                if(count!=msgLen) dataMsg[count++]=d;
+                else{
+                    if(d==(0xFF&crc)) msgAvl = 1;
+                    status=0;
                 }
-            case 5: 
-                if(d==(0xFF&crc)) msgAvl = 1;
-                status=0;
-                break;
         }
         crc+=d*211;
         crc^=crc>>8;
@@ -120,9 +123,13 @@ void logicUart(){
                 }
                 break;
             }
+            case 3:
+                sendPack(3, (uint8_t*)&coreDebug, sizeof(coreDebug_t));
+                break;
             case 0x72:
                 sendPack(0xF2, 0, 0);
-                coreStatus.mode=testFun1Mode;
+                coreStatus.mode=watiTestMode;
+                coreStatus.status &= 0xFC0003FF;
                 break;
             case 0x70:
                 sendPack(0xF0, 0, 0);
@@ -130,7 +137,7 @@ void logicUart(){
                 break;
             case 0x71:
                 sendPack(0xF1, 0, 0);
-                coreStatus.mode=afterErrMode;
+                coreStatus.mode=waitMode;
                 break;
             case 0x7F:
                 NVIC_SystemReset();

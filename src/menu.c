@@ -188,7 +188,7 @@ void drawMain(char* str){   // Вывод главного экрана
     xprintf("%04dRPM", rpmMax);
 
     ssd1306_SetCursor(75, 49);
-    xprintf("%uV", coreStatus.voltage/100%100);
+    xprintf("%uV", (coreStatus.voltage+50)/100%100);
 
     ssd1306_SetCursor(102, 49);
     xprintf("%u", coreStatus.current/100);

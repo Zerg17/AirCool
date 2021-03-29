@@ -20,8 +20,8 @@
   ],
   "name": "STM32F030K6T6",
   "upload": {
-    "maximum_ram_size": 4096,
-    "maximum_size": 31744,
+    "maximum_ram_size": 3904,
+    "maximum_size": 29696,
     "protocol": "stlink",
     "protocols": [
       "stlink",

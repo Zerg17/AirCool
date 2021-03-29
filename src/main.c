@@ -9,7 +9,8 @@ int main(void){
     loadFlashSetting();
 
     while(1){
-        if(sec>5)updateMenu();
+        if(sec>1)updateMenu();
         logicUart();
+        IWDG->KR = 0xAAAA;
     }
 }
