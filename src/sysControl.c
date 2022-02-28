@@ -41,24 +41,26 @@ void logicProc(){
             case waitStartMode: coreStatus.mode=coreSetting.testSkip || testComplite?befStartMode:watiTestMode; break;
             case watiTestMode: coreStatus.mode=testFun1Mode; if(!coreSetting.fun1OffAv) break;
             case testFun1Mode: coreStatus.mode=testFun2Mode; if(!coreSetting.fun2OffAv) break;
-            case testFun2Mode: coreStatus.mode=testHeatMode; break;
-            case testHeatMode: coreStatus.mode=testCoolMode; break;
+            case testFun2Mode: coreStatus.mode=testHeatMode; if(!coreStatus.alm2) break;
+            case testHeatMode: coreStatus.mode=testCoolMode; if(!coreStatus.alm2) break;
             case testCoolMode: coreStatus.mode=befStartMode; testComplite=1; break;
             case befStartMode: coreStatus.mode=waitMode; break;
         }
     }
 
     if(coreStatus.mode == waitMode){
-        if(term1>coreSetting.tCool)coreStatus.mode=coolMode;
-        if(term1<coreSetting.tHeat)coreStatus.mode=heatMode;
+        if(!coreStatus.alm2){
+            if(term1>coreSetting.tCool)coreStatus.mode=coolMode;
+            if(term1<coreSetting.tHeat)coreStatus.mode=heatMode;
+        }
     }
 
     if(coreStatus.mode == coolMode){
-        if(term1<(coreSetting.tCool-coreSetting.deltaTCool))coreStatus.mode=waitMode;
+        if(term1<(coreSetting.tCool-coreSetting.deltaTCool) || coreStatus.alm2)coreStatus.mode=waitMode;
     }
 
     if(coreStatus.mode == heatMode){
-        if(term1>(coreSetting.tHeat+coreSetting.deltaTHeat))coreStatus.mode=waitMode;
+        if(term1>(coreSetting.tHeat+coreSetting.deltaTHeat) || coreStatus.alm2)coreStatus.mode=waitMode;
     }
 }
 
@@ -134,18 +136,20 @@ void SysTick_Handler(void) {
         || coreStatus.errHighCurrentCool || coreStatus.errLowCurrentCool
         || coreStatus.errHighCurrentHeat || coreStatus.errLowCurrentHeat
         || coreStatus.errTmp1            || coreStatus.errTmp2
-        || coreStatus.alm1               || coreStatus.alm2){
+        || coreStatus.alm1               /*|| coreStatus.alm2*/){
         coreStatus.mode=errMode;
-        if(coreSetting.invRel)ALARM_OFF;
-        else ALARM_ON;
+        if(coreSetting.invRel)ALARM_OFF; else ALARM_ON;
     }else{
         if(coreStatus.mode==errMode)coreStatus.mode=waitMode;
-        if(coreSetting.invRel)ALARM_ON;
-        else ALARM_OFF;
+        if(coreStatus.alm2){    // Для фиктивной аварии на реле по проподанию 220В
+            if(coreSetting.invRel)ALARM_ON; else ALARM_OFF;
+        }else{
+            if(coreSetting.invRel)ALARM_OFF; else ALARM_ON;
+        }
     }
 
     /////////////////////////////////////////////////////////////////
-    // Обработка 1 вентилятора
+    // Обработка 1 вентилятора (нижний)
 
     static uint32_t errFun1Count=0;
     if(coreStatus.errFun1==0 && !coreSetting.fun1OffAv && (coreStatus.mode == coolMode ||  coreStatus.mode == waitMode || coreStatus.mode == testFun1Mode || coreStatus.mode == testCoolMode)){
@@ -153,10 +157,10 @@ void SysTick_Handler(void) {
         if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm1S=coreSetting.fanSpeedRPM1;
         if(coreStatus.mode == testFun1Mode) rpm1S=coreSetting.minFanSpeedRPM1;
         if(coreStatus.mode == waitMode) rpm1S=(coreStatus.temp1>(coreSetting.tHeat+coreSetting.deltaTHeat+100) && !coreSetting.fun1OffFC)?
-            map(coreStatus.temp1, coreSetting.tHeat+coreSetting.deltaTHeat+100, coreSetting.tCool, coreSetting.minFanSpeedRPM1, coreSetting.fanSpeedRPM1):0;
+            min(map(coreStatus.temp1, coreSetting.tHeat+coreSetting.deltaTHeat+100, coreSetting.tCool, coreSetting.minFanSpeedRPM1, coreSetting.fanSpeedRPM1), coreSetting.fanSpeedRPM1):0;
         
-        // if(rpm1S && rpm1<500)errFun1Count++;
-        // else if(errFun1Count) errFun1Count--;
+        if(rpm1S && rpm1<500)errFun1Count++;
+        else if(errFun1Count) errFun1Count--;
 
         if(errFun1Count>30*100){
             errFun1Count=0;   
@@ -167,18 +171,20 @@ void SysTick_Handler(void) {
     }
 
     /////////////////////////////////////////////////////////////////
-    // Обработка 2 вентилятора
+    // Обработка 2 вентилятора (верхний)
 
     static uint32_t errFun2Count=0;
     if(coreStatus.errFun2==0 && !coreSetting.fun2OffAv && (coreStatus.mode == coolMode || coreStatus.mode == heatMode ||  coreStatus.mode == waitMode || coreStatus.mode == testFun2Mode || coreStatus.mode == testCoolMode || coreStatus.mode == testHeatMode)){
 
-        if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode) rpm2S=coreSetting.fanSpeedRPM2;
-        if(coreStatus.mode == heatMode || coreStatus.mode == testFun2Mode || coreStatus.mode == testHeatMode) rpm2S=coreSetting.minFanSpeedRPM2;
-        if(coreStatus.mode == waitMode) rpm2S=(coreStatus.temp1>(coreSetting.tHeat+coreSetting.deltaTHeat+100) && !coreSetting.fun2OffFC)?
-             map(coreStatus.temp1, coreSetting.tHeat+coreSetting.deltaTHeat+100, coreSetting.tCool, coreSetting.minFanSpeedRPM2, coreSetting.fanSpeedRPM2):0;
+        if(coreStatus.mode == coolMode || coreStatus.mode == testCoolMode || coreStatus.mode == heatMode || coreStatus.mode == testHeatMode) rpm2S=coreSetting.fanSpeedRPM2;
+        if(coreStatus.mode == testFun2Mode) rpm2S=coreSetting.minFanSpeedRPM2;
+        // if(coreStatus.mode == waitMode) rpm2S=(coreStatus.temp1>(coreSetting.tHeat+coreSetting.deltaTHeat+100) && !coreSetting.fun2OffFC)?
+        //     min(map(coreStatus.temp1, coreSetting.tHeat+coreSetting.deltaTHeat+100, coreSetting.tCool, coreSetting.minFanSpeedRPM2, coreSetting.fanSpeedRPM2), coreSetting.fanSpeedRPM2):0;
+        if(coreStatus.mode == waitMode)
+            rpm2S = min(map(coreStatus.temp1, coreSetting.tHeat+coreSetting.deltaTHeat+100, coreSetting.tCool, coreSetting.minFanSpeedRPM2, coreSetting.fanSpeedRPM2), coreSetting.fanSpeedRPM2);
 
-        // if(rpm2S && rpm2<500)errFun2Count++;
-        // else if(errFun2Count) errFun2Count--;
+        if(rpm2S && rpm2<500)errFun2Count++;
+        else if(errFun2Count) errFun2Count--;
 
         if(errFun2Count>30*100){
             errFun2Count=0;   
@@ -195,14 +201,14 @@ void SysTick_Handler(void) {
     static uint32_t coolTim=0;
     if(coolTim)coolTim--;
     static uint16_t errCoolCount=0;
-    if(coolTim==0 && coreStatus.errLowCurrentCool==0 && coreStatus.errHighCurrentCool==0 && (coreStatus.mode == coolMode || coreStatus.mode == testCoolMode)){
+    if(!coreStatus.alm2 && coolTim==0 && coreStatus.errLowCurrentCool==0 && coreStatus.errHighCurrentCool==0 && (coreStatus.mode == coolMode || coreStatus.mode == testCoolMode)){
         COOL_ON;
         coreStatus.coolOn=1;
 
         if(current<coreSetting.compressorCurrentMin || current>coreSetting.compressorCurrentMax)errCoolCount++;
         else if(errCoolCount) errCoolCount--;
 
-        if(coreStatus.mode == testCoolMode && errCoolCount>5*100){
+        if(errCoolCount>5*100){
             errCoolCount=0;
             COOL_OFF;
             coreStatus.coolOn=0;
@@ -211,23 +217,25 @@ void SysTick_Handler(void) {
         }
     }else{
         COOL_OFF;
-        if(coolTim==0 && coreStatus.coolOn) coolTim=60*100;
+        if(coolTim==0 && coreStatus.coolOn) coolTim=3*60*100;
         coreStatus.coolOn=0;
-        
+        errCoolCount=0;
     }
 
     /////////////////////////////////////////////////////////////////
     // Обработка нагревателя
 
+    static uint32_t heatTim=0;
+    if(heatTim)heatTim--;
     static uint16_t errHeatCount=0;
-    if(coreStatus.errLowCurrentHeat==0 && coreStatus.errHighCurrentHeat==0 && (coreStatus.mode == heatMode || coreStatus.mode == testHeatMode)){
+    if(!coreStatus.alm2 && heatTim==0 && coreStatus.errLowCurrentHeat==0 && coreStatus.errHighCurrentHeat==0 && (coreStatus.mode == heatMode || coreStatus.mode == testHeatMode)){
         HEAT_ON;
         coreStatus.heatOn=1;
 
         if(current<coreSetting.heaterCurrentMin || current>coreSetting.heaterCurrentMax)errHeatCount++;
         else if(errHeatCount) errHeatCount--;
 
-        if(coreStatus.mode == testHeatMode && errHeatCount>20*100){
+        if(errHeatCount>20*100){
             errHeatCount=0;
             HEAT_OFF;
             coreStatus.heatOn=0;
@@ -236,7 +244,9 @@ void SysTick_Handler(void) {
         }
     }else{
         HEAT_OFF;
+        if(heatTim==0 && coreStatus.heatOn) heatTim=10*100;
         coreStatus.heatOn=0;
+        errHeatCount=0;
     }
 
     coreDebug.cnt = SysTick->VAL;
@@ -245,28 +255,32 @@ void SysTick_Handler(void) {
 void EXTI4_15_IRQHandler(){
     uint16_t t = TIM14->CNT;
     static uint16_t lt1, lt2;
+    static uint16_t rmp1B[8], rmp2B[8];
+    static uint8_t rmp1C, rmp2C;
 
     if((EXTI->PR & EXTI_PR_PR4) == EXTI_PR_PR4){
         EXTI->PR |= EXTI_PR_PR4;
         uint16_t dt=t-lt1;
-        if(dt>2400U){
-            for(volatile uint16_t i=0; i<800; i++);
-            if(!(GPIOB->IDR & GPIO_IDR_4)){
-                rpm1=9600000/dt;
-                lt1=t; 
-            }
+        if(dt>800U){
+            rmp1C=(rmp1C+1)%8;
+            rmp1B[rmp1C]=4800000/dt;
+            uint32_t tmp=0;
+            for(uint8_t i=0; i<8; i++)tmp+=rmp1B[i];
+            rpm1=tmp/8;
+            lt1=t;
         }
     }
 
     if((EXTI->PR & EXTI_PR_PR12) == EXTI_PR_PR12){
         EXTI->PR |= EXTI_PR_PR12;
         uint16_t dt=t-lt2;
-        if(dt>2400U){
-            for(volatile uint16_t i=0; i<800; i++);
-            if(!(GPIOA->IDR & GPIO_IDR_12)){
-                rpm2=9600000/dt;
-                lt2=t; 
-            }
+        if(dt>800U){
+            rmp2C=(rmp2C+1)%8;
+            rmp2B[rmp2C]=4800000/dt;
+            uint32_t tmp=0;
+            for(uint8_t i=0; i<8; i++)tmp+=rmp2B[i];
+            rpm2=tmp/8;
+            lt2=t;
         }
     }
 }

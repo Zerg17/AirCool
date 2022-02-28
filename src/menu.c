@@ -205,7 +205,10 @@ void updateMenu(){  // Обновления меню экрана
     switch(coreStatus.mode){
         case waitStartMode: drawWait(timWaitNext/100); break;
         case watiTestMode: drawMain("Ожидание запуска"); break;
-        case waitMode: drawMain("Ожидание"); break;
+        case waitMode: 
+            if(!coreStatus.alm2) drawMain("Ожидание");
+            else drawMain("Нет первичной сети");
+            break;
         case coolMode: drawMain("Охлаждение"); break;
         case heatMode: drawMain("Нагрев"); break;
         case testFun1Mode: drawMain("Тест 1 вентилятора"); break;

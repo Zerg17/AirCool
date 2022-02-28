@@ -10,7 +10,7 @@
 #define tCool_MAX 6000
 
 #define tHeat_MIN -1000
-#define tHeat_DEF 500
+#define tHeat_DEF 750
 #define tHeat_MAX 3500
 
 
@@ -41,19 +41,15 @@
 
 
 #define compressorCurrentMin_MIN 0
-#define compressorCurrentMin_DEF 10
 #define compressorCurrentMin_MAX 1000
 
 #define compressorCurrentMax_MIN 100
-#define compressorCurrentMax_DEF 1000
 #define compressorCurrentMax_MAX 1000
 
 
 #define heaterCurrentMin_MIN 0
-#define heaterCurrentMin_DEF 10
 #define heaterCurrentMin_MAX 1000
 
-#define heaterCurrentMax_DEF 1000
 #define heaterCurrentMax_MIN 100
 #define heaterCurrentMax_MAX 1000
 
